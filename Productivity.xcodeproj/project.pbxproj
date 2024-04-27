@@ -14,6 +14,16 @@
 		D8F9863D2BDD491A00A5A956 /* ProductivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9863C2BDD491A00A5A956 /* ProductivityTests.swift */; };
 		D8F986472BDD491A00A5A956 /* ProductivityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986462BDD491A00A5A956 /* ProductivityUITests.swift */; };
 		D8F986492BDD491A00A5A956 /* ProductivityUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986482BDD491A00A5A956 /* ProductivityUITestsLaunchTests.swift */; };
+		D8F986562BDD498100A5A956 /* CreateTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986552BDD498100A5A956 /* CreateTaskView.swift */; };
+		D8F9865A2BDD4AB800A5A956 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986592BDD4AB800A5A956 /* Task.swift */; };
+		D8F9865D2BDD540100A5A956 /* Task+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9865C2BDD540100A5A956 /* Task+Extension.swift */; };
+		D8F9865F2BDD60D600A5A956 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9865E2BDD60D600A5A956 /* View+Extension.swift */; };
+		D8F986622BDD6A5100A5A956 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986612BDD6A5100A5A956 /* NetworkManager.swift */; };
+		D8F986652BDD6CD200A5A956 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D8F986642BDD6CD200A5A956 /* Alamofire */; };
+		D8F986672BDD732600A5A956 /* TodoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F986662BDD732600A5A956 /* TodoListView.swift */; };
+		D8F9866A2BDD748B00A5A956 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = D8F986692BDD748B00A5A956 /* AlertToast */; };
+		D8F9866C2BDD78FD00A5A956 /* PreviewTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9866B2BDD78FD00A5A956 /* PreviewTaskView.swift */; };
+		D8F9866E2BDD850D00A5A956 /* PreviewTaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9866D2BDD850D00A5A956 /* PreviewTaskListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +54,14 @@
 		D8F986422BDD491A00A5A956 /* ProductivityUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProductivityUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8F986462BDD491A00A5A956 /* ProductivityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductivityUITests.swift; sourceTree = "<group>"; };
 		D8F986482BDD491A00A5A956 /* ProductivityUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductivityUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D8F986552BDD498100A5A956 /* CreateTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTaskView.swift; sourceTree = "<group>"; };
+		D8F986592BDD4AB800A5A956 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		D8F9865C2BDD540100A5A956 /* Task+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Extension.swift"; sourceTree = "<group>"; };
+		D8F9865E2BDD60D600A5A956 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
+		D8F986612BDD6A5100A5A956 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		D8F986662BDD732600A5A956 /* TodoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListView.swift; sourceTree = "<group>"; };
+		D8F9866B2BDD78FD00A5A956 /* PreviewTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTaskView.swift; sourceTree = "<group>"; };
+		D8F9866D2BDD850D00A5A956 /* PreviewTaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTaskListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +69,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8F986652BDD6CD200A5A956 /* Alamofire in Frameworks */,
+				D8F9866A2BDD748B00A5A956 /* AlertToast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,8 +114,11 @@
 		D8F9862A2BDD491500A5A956 /* Productivity */ = {
 			isa = PBXGroup;
 			children = (
+				D8F986602BDD6A3200A5A956 /* Networking */,
+				D8F9865B2BDD53D100A5A956 /* Extensions */,
+				D8F986582BDD49B700A5A956 /* View */,
+				D8F986572BDD49A800A5A956 /* Model */,
 				D8F9862B2BDD491500A5A956 /* ProductivityApp.swift */,
-				D8F9862D2BDD491500A5A956 /* ContentView.swift */,
 				D8F9862F2BDD491900A5A956 /* Assets.xcassets */,
 				D8F986312BDD491900A5A956 /* Preview Content */,
 			);
@@ -127,6 +150,43 @@
 			path = ProductivityUITests;
 			sourceTree = "<group>";
 		};
+		D8F986572BDD49A800A5A956 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D8F986592BDD4AB800A5A956 /* Task.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		D8F986582BDD49B700A5A956 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				D8F9862D2BDD491500A5A956 /* ContentView.swift */,
+				D8F986552BDD498100A5A956 /* CreateTaskView.swift */,
+				D8F986662BDD732600A5A956 /* TodoListView.swift */,
+				D8F9866B2BDD78FD00A5A956 /* PreviewTaskView.swift */,
+				D8F9866D2BDD850D00A5A956 /* PreviewTaskListView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		D8F9865B2BDD53D100A5A956 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D8F9865C2BDD540100A5A956 /* Task+Extension.swift */,
+				D8F9865E2BDD60D600A5A956 /* View+Extension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		D8F986602BDD6A3200A5A956 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				D8F986612BDD6A5100A5A956 /* NetworkManager.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,6 +203,10 @@
 			dependencies = (
 			);
 			name = Productivity;
+			packageProductDependencies = (
+				D8F986642BDD6CD200A5A956 /* Alamofire */,
+				D8F986692BDD748B00A5A956 /* AlertToast */,
+			);
 			productName = Productivity;
 			productReference = D8F986282BDD491500A5A956 /* Productivity.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +279,10 @@
 				Base,
 			);
 			mainGroup = D8F9861F2BDD491500A5A956;
+			packageReferences = (
+				D8F986632BDD6C3600A5A956 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				D8F986682BDD748B00A5A956 /* XCRemoteSwiftPackageReference "AlertToast" */,
+			);
 			productRefGroup = D8F986292BDD491500A5A956 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,8 +325,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8F9865A2BDD4AB800A5A956 /* Task.swift in Sources */,
+				D8F986562BDD498100A5A956 /* CreateTaskView.swift in Sources */,
 				D8F9862E2BDD491500A5A956 /* ContentView.swift in Sources */,
+				D8F986672BDD732600A5A956 /* TodoListView.swift in Sources */,
+				D8F986622BDD6A5100A5A956 /* NetworkManager.swift in Sources */,
 				D8F9862C2BDD491500A5A956 /* ProductivityApp.swift in Sources */,
+				D8F9866E2BDD850D00A5A956 /* PreviewTaskListView.swift in Sources */,
+				D8F9866C2BDD78FD00A5A956 /* PreviewTaskView.swift in Sources */,
+				D8F9865F2BDD60D600A5A956 /* View+Extension.swift in Sources */,
+				D8F9865D2BDD540100A5A956 /* Task+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +664,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D8F986632BDD6C3600A5A956 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.9.1;
+			};
+		};
+		D8F986682BDD748B00A5A956 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D8F986642BDD6CD200A5A956 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8F986632BDD6C3600A5A956 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		D8F986692BDD748B00A5A956 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8F986682BDD748B00A5A956 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D8F986202BDD491500A5A956 /* Project object */;
 }
