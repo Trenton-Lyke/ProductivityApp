@@ -14,7 +14,6 @@ class Course(db.Model):
     code = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     assignments = db.relationship('Assignment')
-    instructors = db.relationship('User', secondary=course_user_association)
     students = db.relationship('User', secondary=course_user_association)
 
     def __init__(self, **kwargs):
@@ -27,7 +26,6 @@ class Course(db.Model):
         "code": self.code,
         "name": self.name,
         "assignments": [assignment.serialize() for assignment in self.assignments],  
-        "instructors": [instructor.serialize() for instructor in self.instructors],  
         "students": [student.serialize() for student in self.students]
       }
 
@@ -72,3 +70,17 @@ class Assignment(db.Model):
           "name": Course.query.get(self.course_id).name
         }
       }
+
+class Timer(db.model):
+    __tablename__ = "timer"
+    id = db.Column(db.Integer, primary_key)
+    time = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, **kwargs):
+        self.time = kwargs.get("time", 0)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "time": self.time
+        }
