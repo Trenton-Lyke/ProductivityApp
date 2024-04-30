@@ -55,31 +55,25 @@ struct AssignmentRow: View {
                 AssignmentView(assignment: assignment)
             } label: {
                 HStack {
-                Text(assignment.name)
-                
                 if assignment.done {
-                    Image(systemName: "checkmark.seal.fill")
+                    Image(systemName: "circle.fill")
                         .imageScale(.large)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.pink)
+                        .onTapGesture { print("One") }
                 } else {
-                    Spacer()
-                    HStack(spacing: 20){
-                        Button{
-                            
-                        } label: {
-                            Image(systemName: "checkmark.square.fill")
-                                .imageScale(.large)
-                                .foregroundStyle(.green)
-                        }
-                        Button{
-                            
-                        } label: {
-                            Image(systemName: "x.square.fill")
-                                .imageScale(.large)
-                                .foregroundStyle(.red)
-                        }
-                    }
+                    Image(systemName: "circle")
+                        .imageScale(.large)
+                        .foregroundStyle(.pink)
+                        .onTapGesture { print("Two") }
                 }
+                Text(assignment.name)
+                Spacer()
+                
+                    Image(systemName: "trash")
+                        .imageScale(.large)
+                        .foregroundStyle(.red)
+                        .onTapGesture { print("Two") }
+
             }
         }
     }
