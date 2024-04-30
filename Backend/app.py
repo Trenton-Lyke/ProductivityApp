@@ -1,6 +1,7 @@
-from db import db
-from flask import Flask, json, request
-from db import Course, User, Assignment
+import json
+
+from db import Assignment, User, Course, db
+from flask import Flask, request
 
 app = Flask(__name__)
 db_filename = "cms.db"
@@ -13,104 +14,189 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+
 def success_response(data, code=200):
+    """
+    Formats successful response
+    """
     return json.dumps(data), code
 
+
 def failure_response(message, code=404):
+    """
+    Formats failure response
+    """
     return json.dumps({"error": message}), code
 
+
+# your routes here
+@app.route("/")
 @app.route("/api/courses/")
 def get_courses():
-    courses = []
-    for course in Course.query.all():
-        courses.append(course.serialize())
-    return success_response({"courses": courses})
+    """
+    Endpoint for getting all courses
+    """
+    return success_response({"courses": [c.serialize() for c in Course.query.all()]})
+
 
 @app.route("/api/courses/", methods=["POST"])
 def create_course():
+    """
+    Endpoint for creating a new course
+    """
     body = json.loads(request.data)
-    new_course = Course(
-        code=body.get('code'),
-        name=body.get('name'),
-        assignments = [],
-        instructors = [],
-        students = []
-    )
+    code = body.get("code", None)
+    name = body.get("name", None)
+
+    error = ""
+
+    if code is None:
+        error += "Missing code in request body. "
+
+    if name is None:
+        error += "Missing name in request body. "
+
+    error = error.strip()
+
+    if error != "":
+        return failure_response(error, 400)
+
+    new_course = Course(code=code, name=name)
     db.session.add(new_course)
     db.session.commit()
     return success_response(new_course.serialize(), 201)
 
+
 @app.route("/api/courses/<int:course_id>/")
 def get_course(course_id):
+    """
+    Endpoint for getting specific course
+    """
     course = Course.query.filter_by(id=course_id).first()
     if course is None:
-        return failure_response("Course Not Found")
+        return failure_response("Course not found")
     return success_response(course.serialize())
+
 
 @app.route("/api/courses/<int:course_id>/", methods=["DELETE"])
 def delete_course(course_id):
+    """
+    Endpoint for deleting course
+    """
     course = Course.query.filter_by(id=course_id).first()
     if course is None:
-        return failure_response("Course Not Found")
+        return failure_response("Course not found")
     db.session.delete(course)
     db.session.commit()
     return success_response(course.serialize())
 
+
 @app.route("/api/users/", methods=["POST"])
 def create_user():
+    """
+    Endpoint for creating a new user
+    """
     body = json.loads(request.data)
-    new_user = User(
-        name=body.get('name'),
-        netid=body.get('netid')
-    )
+    name = body.get("name", None)
+    netid = body.get("netid", None)
+
+    error = ""
+
+    if name is None:
+        error += "Missing name in request body. "
+
+    if netid is None:
+        error += "Missing netid in request body. "
+
+    error = error.strip()
+
+    if error != "":
+        return failure_response(error, 400)
+
+    new_user = User(name=name, netid=netid)
     db.session.add(new_user)
     db.session.commit()
     return success_response(new_user.serialize(), 201)
 
+
 @app.route("/api/users/<int:user_id>/")
 def get_user(user_id):
+    """
+    Endpoint for getting specific user
+    """
     user = User.query.filter_by(id=user_id).first()
     if user is None:
-        return failure_response("User Not Found")
+        return failure_response("User not found")
     return success_response(user.serialize())
+
 
 @app.route("/api/courses/<int:course_id>/add/", methods=["POST"])
 def add_user_to_course(course_id):
     body = json.loads(request.data)
-    user_id = body.get('user_id')
-    user_type = body.get('type')
+    user_id = body.get("user_id", None)
+    type = body.get("type", None)
+
+    error = ""
+
+    if user_id is None:
+        error += "Missing user_id in request body. "
+
+    if type is None:
+        error += "Missing type in request body."
+    elif type != "student" and type != "instructor":
+        error += "type must be student or instructor"
+
+    error = error.strip()
+
+    if error != "":
+        return failure_response(error, 400)
+
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found")
 
     course = Course.query.filter_by(id=course_id).first()
-    user = User.query.filter_by(id=user_id).first()
     if course is None:
-        return failure_response("Course Not Found")
-    if user is None:
-        return failure_response("User Not Found")
-    if user_type == "student":
-        course.students.append(user)
-    elif user_type == "instructor":
+        return failure_response("Course not found")
+
+    if type == "instructor":
         course.instructors.append(user)
     else:
-        return failure_response("Invalid user type")
+        course.students.append(user)
+
     db.session.commit()
     return success_response(course.serialize())
 
+
 @app.route("/api/courses/<int:course_id>/assignment/", methods=["POST"])
-def create_assignment(course_id):
+def add_assignment_to_course(course_id):
     body = json.loads(request.data)
-    title = body.get('title')
-    due_date = body.get('due_date')
+    title = body.get("title", None)
+    due_date = body.get("due_date", None)
+
+    error = ""
+
+    if title is None:
+        error += "Missing title in request body. "
+
+    if due_date is None:
+        error += "Missing due_date in request body. "
+
+    error = error.strip()
+
+    if error != "":
+        return failure_response(error, 400)
+
     course = Course.query.filter_by(id=course_id).first()
     if course is None:
-        return failure_response("Course Not Found")
-    new_assignment = Assignment(
-        title=title,
-        due_date=due_date,
-        course_id=course_id
-    )
-    db.session.add(new_assignment)
+        return failure_response("Course not found")
+
+    assignment = Assignment(title=title, due_date=due_date, course_id=course_id)
+    db.session.add(assignment)
     db.session.commit()
-    return success_response(new_assignment.serialize(), 201)
+
+    return success_response(assignment.serialize(), 201)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
