@@ -13,18 +13,16 @@ class UserDataManager : ObservableObject {
     static let shared = UserDataManager()
     
     @Published private var user: User?
-    private var assignmentsCount: Int = 0
-    private var completedAssignmentsCount: Int = 0
 
     private init() { 
         
     }
     
-    private func updateAssignmentsCounts() {
-        assignmentsCount = 0
-        completedAssignmentsCount = 0
+    func getAssignmentCounts() -> (Int, Int) {
+        var assignmentsCount = 0
+        var completedAssignmentsCount = 0
         guard let currentUser = user else {
-            return
+            return (assignmentsCount, completedAssignmentsCount)
         }
         for course in currentUser.courses {
             for assignment in course.assignments {
@@ -35,6 +33,7 @@ class UserDataManager : ObservableObject {
                 }
             }
         }
+        return (assignmentsCount, completedAssignmentsCount)
     }
 
     
@@ -43,7 +42,6 @@ class UserDataManager : ObservableObject {
             user = User.dummyUser
             
             if let currentUser = user {
-                updateAssignmentsCounts()
                 onsuccess(currentUser)
             }
         } else {
@@ -53,7 +51,6 @@ class UserDataManager : ObservableObject {
     
     func logout() {
         user = nil
-        updateAssignmentsCounts()
     }
     
     
@@ -62,7 +59,6 @@ class UserDataManager : ObservableObject {
             user = User(id: 1, name: "\(firstName) \(lastName)", courses: Course.dummyCourses)
             
             if let currentUser = user {
-                updateAssignmentsCounts()
                 onsuccess(currentUser)
             }
         } else {
@@ -94,12 +90,68 @@ class UserDataManager : ObservableObject {
         }
     }
     
+    func deleteAssignment(assignmentId: Int, onsuccess: (Assignment) -> Void, onfailure: () -> Void) {
+        if let currentUser = user {
+            var removedAssignment = Assignment.dummyAssignment
+            var courses: [Course] = []
+            for course in currentUser.courses {
+                var assignments: [Assignment] = []
+                for assignment in course.assignments {
+                    if assignment.id != assignmentId {
+                        assignments.append(assignment)
+                    } else {
+                        removedAssignment = assignment
+                    }
+                }
+                let newCourse = Course(id: course.id, name: course.name, description: course.description, assignments: assignments)
+                courses.append(newCourse)
+            }
+            user = User(id: currentUser.id, name: currentUser.name, courses: courses)
+            onsuccess(removedAssignment)
+        }
+        
+        onfailure()
+    }
+    
     func createCourse(name: String, description: String, onsuccess: (Course) -> Void, onfailure: () -> Void) {
+        if name == "A" {
+            if let currentUser = user {
+                var newCourse = Course(id: currentUser.courses.count, name: name, description: description, assignments: [])
+                var courses: [Course] = currentUser.courses + [newCourse]
+
+                user = User(id: currentUser.id, name: currentUser.name, courses: courses)
+                onsuccess(newCourse)
+            }
+            onfailure()
+            
+        } else {
+            onfailure()
+        }
+    }
+    
+    func updateCourse(courseId: Int, name: String, description: String, onsuccess: (Course) -> Void, onfailure: () -> Void) {
         if name == "A" {
             onsuccess(Course.dummyCourse1)
         } else {
             onfailure()
         }
+    }
+    
+    func deleteCourse(courseId: Int, onsuccess: (Course) -> Void, onfailure: () -> Void) {
+        if let currentUser = user {
+            var removedCourse = Course.dummyCourse1
+            var courses: [Course] = []
+            for course in currentUser.courses {
+                if course.id != courseId {
+                    courses.append(course)
+                } else {
+                    removedCourse = course
+                }
+            }
+            user = User(id: currentUser.id, name: currentUser.name, courses: courses)
+            onsuccess(removedCourse)
+        }
+        onfailure()
     }
     
     func getUser() -> User? {
@@ -120,13 +172,5 @@ class UserDataManager : ObservableObject {
         }
         
         return currentUser.courses
-    }
-    
-    func getAssignmentCount() -> Int {
-        return assignmentsCount
-    }
-    
-    func getCompletedAssignmentCount() -> Int {
-        return completedAssignmentsCount
     }
 }

@@ -27,7 +27,7 @@ struct EditCourseView: View {
                 BorderedTextField(title: "Course name", placeholder: "Enter course name", text: $name)
                 BorderedTextEditor(title: "Course description", text: $description)
             
-                TextButton(title: "Submit", foregroundColor: .white, backgroundColor: .pink, action: createCourse)
+                TextButton(title: "Submit", foregroundColor: .white, backgroundColor: .pink, action: editCourse)
                 
                 Spacer()
             }.padding(20)
@@ -38,9 +38,9 @@ struct EditCourseView: View {
         }
     }
     
-    private func createCourse() {
+    private func editCourse() {
         print("create course button clicked: \(name); \(description)")
-        UserDataManager.shared.createCourse(name: name, description: description) { course in
+        UserDataManager.shared.updateCourse(courseId: course.id, name: name, description: description) { course in
             showSuccess.toggle()
         } onfailure: {
             showFailure.toggle()

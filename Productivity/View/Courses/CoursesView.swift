@@ -21,6 +21,12 @@ struct CoursesView: View {
                             HStack{
                                 Text(course.name)
                                 Spacer()
+                                Image(systemName: "trash")
+                                    .imageScale(.large)
+                                    .foregroundStyle(.red)
+                                    .onTapGesture {
+                                        UserDataManager.shared.deleteCourse(courseId: course.id, onsuccess: {_ in }, onfailure: {})
+                                    }
                             }
                         }
                     }
@@ -28,7 +34,7 @@ struct CoursesView: View {
 
                 if userManager.isLoggedIn() {
                     NavigationLink {
-                        CreateCourseView()
+                        CreateCourseView(isTemporaryWindow: false)
                     } label: {
                         Label("Add new course", systemImage: "plus")
                             .foregroundStyle(.blue)

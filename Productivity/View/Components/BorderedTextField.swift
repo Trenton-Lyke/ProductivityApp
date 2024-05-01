@@ -12,6 +12,7 @@ struct BorderedTextField: View {
     var placeholder: String
     @Binding var text: String
     
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text(title).font(.headline)

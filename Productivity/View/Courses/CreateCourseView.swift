@@ -9,10 +9,12 @@ import SwiftUI
 import AlertToast
 
 struct CreateCourseView: View {
+    var isTemporaryWindow: Bool
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var showSuccess = false
     @State private var showFailure = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationView(title: "Create Course") {
@@ -36,7 +38,13 @@ struct CreateCourseView: View {
         UserDataManager.shared.createCourse(name: name, description: description) { course in
             name = ""
             description = ""
-            showSuccess.toggle()
+            
+            if isTemporaryWindow {
+                self.presentationMode.wrappedValue.dismiss()
+            } else {
+                showSuccess.toggle()
+            }
+            
         } onfailure: {
             showFailure.toggle()
         }
@@ -44,5 +52,5 @@ struct CreateCourseView: View {
 }
 
 #Preview {
-    CreateCourseView()
+    CreateCourseView(isTemporaryWindow: false)
 }

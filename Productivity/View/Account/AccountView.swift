@@ -41,6 +41,15 @@ struct AccountView: View {
 
 struct AuthenticatedView: View {
     @Binding var authMethod: AccountPage
+    private let assignmentCount: Int
+    private let completedAssignmentCount: Int
+
+    init(authMethod: Binding<AccountPage>) {
+        self._authMethod = authMethod
+        let assignmentCounts = UserDataManager.shared.getAssignmentCounts()
+        assignmentCount = assignmentCounts.0
+        completedAssignmentCount = assignmentCounts.1
+    }
     
     var body: some View {
         HStack {
@@ -49,7 +58,7 @@ struct AuthenticatedView: View {
                 Text("Welcome \(UserDataManager.shared.getName())")
                     .font(.largeTitle)
 
-                Text("\(UserDataManager.shared.getCompletedAssignmentCount()) out of \(UserDataManager.shared.getAssignmentCount()) assignments completed").font(.title3)
+                Text("\(completedAssignmentCount) out of \(assignmentCount) assignments completed").font(.title3)
                 Button {
                     UserDataManager.shared.logout()
                     authMethod = .login

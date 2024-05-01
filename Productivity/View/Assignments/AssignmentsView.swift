@@ -13,11 +13,17 @@ struct AssignmentsView: View {
     var body: some View {
         NavigationView(title: "Assignments") {
             List {
-                ForEach(UserDataManager.shared.getCourses(), id: \.id) { course in
+                ForEach(userManager.getCourses(), id: \.id) { course in
                     Section {
                         DisclosureGroup(course.name) {
                             ForEach(course.assignments, id: \.id) { assignment in
                                 AssignmentRow(assignment: assignment)
+                            }
+                            NavigationLink {
+                                CreateAssignmentView(courseId: course.id)
+                            } label: {
+                                Label("Add new assignment", systemImage: "plus")
+                                    .foregroundStyle(.blue)
                             }
                         }
                     }
@@ -25,20 +31,21 @@ struct AssignmentsView: View {
 
                 
                 
-                if userManager.isLoggedIn() {
-                    NavigationLink {
-                        CreateAssignmentView()
-                    } label: {
-                        Label("Add new assignment", systemImage: "plus")
-                            .foregroundStyle(.blue)
-                    }
-                } else {
+                if !userManager.isLoggedIn() {
                     NavigationLink {
                         AccountView(isTemporaryAuth: true)
                     } label: {
                         Text("Login to view assignments")
                             .foregroundStyle(.blue)
                     }
+                } else if userManager.getCourses().count == 0 {
+                    NavigationLink {
+                        CreateCourseView(isTemporaryWindow: true)
+                    } label: {
+                        Text("Create a course to add and view assignments")
+                            .foregroundStyle(.blue)
+                    }
+                    
                 }
             }
         }
@@ -47,7 +54,12 @@ struct AssignmentsView: View {
 
 struct AssignmentRow: View {
     let assignment: Assignment
+    @State private var done: Bool
     
+    init(assignment: Assignment) {
+        self.assignment = assignment
+        self._done = State(initialValue: assignment.done)
+    }
 
     var body: some View {
         
@@ -55,24 +67,23 @@ struct AssignmentRow: View {
                 AssignmentView(assignment: assignment)
             } label: {
                 HStack {
-                if assignment.done {
-                    Image(systemName: "circle.fill")
-                        .imageScale(.large)
-                        .foregroundStyle(.pink)
-                        .onTapGesture { print("One") }
-                } else {
-                    Image(systemName: "circle")
-                        .imageScale(.large)
-                        .foregroundStyle(.pink)
-                        .onTapGesture { print("Two") }
-                }
+                
+                Image(systemName: done ? "circle.fill" : "circle")
+                    .imageScale(.large)
+                    .foregroundStyle(.pink)
+                    .onTapGesture {
+                        done.toggle()
+                    }
+
                 Text(assignment.name)
                 Spacer()
                 
-                    Image(systemName: "trash")
-                        .imageScale(.large)
-                        .foregroundStyle(.red)
-                        .onTapGesture { print("Two") }
+                Image(systemName: "trash")
+                    .imageScale(.large)
+                    .foregroundStyle(.red)
+                    .onTapGesture {
+                        UserDataManager.shared.deleteAssignment(assignmentId: assignment.id, onsuccess: {_ in }, onfailure: {})
+                    }
 
             }
         }

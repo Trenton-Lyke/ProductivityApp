@@ -55,7 +55,7 @@ struct EditAssignmentView: View {
                 }
                 Spacer()
                 
-                TextButton(title: "Submit", foregroundColor: .white, backgroundColor: .pink, action: addAssignment)
+                TextButton(title: "Submit", foregroundColor: .white, backgroundColor: .pink, action: editAssignment)
                 Spacer()
             }.padding(20)
         }.toast(isPresenting: $showSuccess){
@@ -66,7 +66,7 @@ struct EditAssignmentView: View {
         
     }
     
-    private func addAssignment() {
+    private func editAssignment() {
         print(selectedCourseId)
         UserDataManager.shared.updateAssignment(assignmentId: assignment.id, name: name, description: description, courseId: selectedCourseId, dueDate: dueDate) { assignment in
             showSuccess.toggle()

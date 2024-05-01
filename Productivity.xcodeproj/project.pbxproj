@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D85D813C2BE2880700428677 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85D813B2BE2880700428677 /* SoundPlayer.swift */; };
+		D85D813D2BE2907D00428677 /* alarm_clock.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D85D81382BE2878900428677 /* alarm_clock.mp3 */; };
+		D85D81402BE2984800428677 /* BorderedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85D813F2BE2984800428677 /* BorderedNumberField.swift */; };
+		D85D81422BE29F7500428677 /* ToggleField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85D81412BE29F7500428677 /* ToggleField.swift */; };
 		D893FFD92BDFEA8E0042851B /* TabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFD82BDFEA8E0042851B /* TabsView.swift */; };
 		D893FFE02BDFEE400042851B /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFDF2BDFEE400042851B /* AccountView.swift */; };
 		D893FFE22BDFEE4C0042851B /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFE12BDFEE4C0042851B /* TimerView.swift */; };
@@ -61,6 +65,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D85D81382BE2878900428677 /* alarm_clock.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm_clock.mp3; sourceTree = "<group>"; };
+		D85D813B2BE2880700428677 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		D85D813F2BE2984800428677 /* BorderedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedNumberField.swift; sourceTree = "<group>"; };
+		D85D81412BE29F7500428677 /* ToggleField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleField.swift; sourceTree = "<group>"; };
 		D893FFD82BDFEA8E0042851B /* TabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabsView.swift; sourceTree = "<group>"; };
 		D893FFDF2BDFEE400042851B /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		D893FFE12BDFEE4C0042851B /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
@@ -125,6 +133,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D85D813E2BE2911A00428677 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				D85D813B2BE2880700428677 /* SoundPlayer.swift */,
+				D85D81382BE2878900428677 /* alarm_clock.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		D893FFDB2BDFEE110042851B /* Assignments */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +177,8 @@
 				D8CD9F092BE030E20003053A /* BorderedTextField.swift */,
 				D8CD9F0B2BE032800003053A /* BorderedSecureField.swift */,
 				D8F7C33B2BE047D500F2C6B7 /* BorderedTextEditor.swift */,
+				D85D813F2BE2984800428677 /* BorderedNumberField.swift */,
+				D85D81412BE29F7500428677 /* ToggleField.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -206,6 +225,7 @@
 		D8F9862A2BDD491500A5A956 /* Productivity */ = {
 			isa = PBXGroup;
 			children = (
+				D85D813E2BE2911A00428677 /* Audio */,
 				D893FFF22BE008350042851B /* Authentication */,
 				D8F986602BDD6A3200A5A956 /* Networking */,
 				D8F9865B2BDD53D100A5A956 /* Extensions */,
@@ -256,8 +276,8 @@
 		D8F986582BDD49B700A5A956 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				D8CD9F002BE020B30003053A /* Courses */,
 				D893FFED2BE000440042851B /* Components */,
+				D8CD9F002BE020B30003053A /* Courses */,
 				D893FFDE2BDFEE2D0042851B /* Account */,
 				D893FFDD2BDFEE240042851B /* Timer */,
 				D893FFDB2BDFEE110042851B /* Assignments */,
@@ -399,6 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8F986332BDD491900A5A956 /* Preview Assets.xcassets in Resources */,
+				D85D813D2BE2907D00428677 /* alarm_clock.mp3 in Resources */,
 				D8F986302BDD491900A5A956 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -427,6 +448,7 @@
 				D8F7C3352BE03A9B00F2C6B7 /* AssignmentView.swift in Sources */,
 				D893FFE02BDFEE400042851B /* AccountView.swift in Sources */,
 				D8F9865A2BDD4AB800A5A956 /* Assignment.swift in Sources */,
+				D85D81402BE2984800428677 /* BorderedNumberField.swift in Sources */,
 				D893FFEA2BDFF3A50042851B /* NavigationView.swift in Sources */,
 				D893FFE82BDFEE7C0042851B /* CoursesView.swift in Sources */,
 				D8F7C33C2BE047D500F2C6B7 /* BorderedTextEditor.swift in Sources */,
@@ -441,11 +463,13 @@
 				D8CD9EFB2BE01E600003053A /* Course.swift in Sources */,
 				D8F7C3422BE0683D00F2C6B7 /* EditCourseView.swift in Sources */,
 				D893FFD92BDFEA8E0042851B /* TabsView.swift in Sources */,
+				D85D81422BE29F7500428677 /* ToggleField.swift in Sources */,
 				D8F986622BDD6A5100A5A956 /* NetworkManager.swift in Sources */,
 				D8F9862C2BDD491500A5A956 /* ProductivityApp.swift in Sources */,
 				D8CD9F0A2BE030E20003053A /* BorderedTextField.swift in Sources */,
 				D8F7C3312BE037E800F2C6B7 /* CourseView.swift in Sources */,
 				D8CD9F042BE023B00003053A /* Course+Extension.swift in Sources */,
+				D85D813C2BE2880700428677 /* SoundPlayer.swift in Sources */,
 				D8CD9F062BE024950003053A /* User+Extension.swift in Sources */,
 				D8F9865F2BDD60D600A5A956 /* View+Extension.swift in Sources */,
 				D8F7C33E2BE0548500F2C6B7 /* CreateAssignmentView.swift in Sources */,

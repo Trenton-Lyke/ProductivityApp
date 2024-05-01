@@ -12,9 +12,13 @@ struct CreateAssignmentView: View {
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var dueDate: Date = Date()
-    @State private var selectedCourseId: Int = Course.dummyCourses[0].id
+    @State private var selectedCourseId: Int
     @State private var showSuccess = false
     @State private var showFailure = false
+    
+    init(courseId: Int) {
+        self._selectedCourseId = State(initialValue: courseId)
+    }
     
     var body: some View {
         NavigationView(title: "Add Assignment") {
@@ -70,5 +74,5 @@ struct CreateAssignmentView: View {
 }
 
 #Preview {
-    CreateAssignmentView()
+    CreateAssignmentView(courseId: 1)
 }
