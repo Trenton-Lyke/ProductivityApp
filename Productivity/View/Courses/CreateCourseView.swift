@@ -11,6 +11,7 @@ import AlertToast
 struct CreateCourseView: View {
     var isTemporaryWindow: Bool
     @State private var name: String = ""
+    @State private var code: String = ""
     @State private var description: String = ""
     @State private var showSuccess = false
     @State private var showFailure = false
@@ -20,6 +21,7 @@ struct CreateCourseView: View {
         NavigationView(title: "Create Course") {
             VStack(alignment: .leading, spacing: 20){
                 BorderedTextField(title: "Course name", placeholder: "Enter course name", text: $name)
+                BorderedTextField(title: "Course code", placeholder: "Enter course code", text: $code)
                 BorderedTextEditor(title: "Course description", text: $description)
             
                 TextButton(title: "Submit", foregroundColor: .white, backgroundColor: .pink, action: createCourse)
@@ -41,8 +43,9 @@ struct CreateCourseView: View {
         
         
         print("create course button clicked: \(name); \(description)")
-        UserDataManager.shared.createCourse(name: name, description: description) { course in
+        UserDataManager.shared.createCourse(name: name, code: code, description: description) { course in
             name = ""
+            code = ""
             description = ""
             
             if isTemporaryWindow {

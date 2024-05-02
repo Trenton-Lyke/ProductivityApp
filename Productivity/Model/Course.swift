@@ -10,6 +10,7 @@ import Foundation
 struct Course: Codable, Hashable {
     let id: Int
     let name: String
+    let code: String
     let description: String
     let assignments: [Assignment]
 }

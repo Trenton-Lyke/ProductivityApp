@@ -8,13 +8,13 @@
 import Foundation
 
 extension Course {
-    static let dummyCourse1 = Course(id: 1, name: "Course 1", description: "The first course you must take", assignments: Assignment.dummyAssignmentListC1)
+    static let dummyCourse1 = Course(id: 1, name: "Course 1", code: "C1", description: "The first course you must take", assignments: Assignment.dummyAssignmentListC1)
     
-    static let dummyCourse2 = Course(id: 2, name: "Course 2", description: "The second course you must take", assignments: Assignment.dummyAssignmentListC2)
+    static let dummyCourse2 = Course(id: 2, name: "Course 2", code: "C2", description: "The second course you must take", assignments: Assignment.dummyAssignmentListC2)
     
-    static let dummyCourse3 = Course(id: 3, name: "Course 3", description: "The third course you must take", assignments: Assignment.dummyAssignmentListC3)
+    static let dummyCourse3 = Course(id: 3, name: "Course 3", code: "C3", description: "The third course you must take", assignments: Assignment.dummyAssignmentListC3)
     
-    static let dummyCourse4 = Course(id: 4, name: "Course 4", description: "The fourth course you must take", assignments: Assignment.dummyAssignmentListC4)
+    static let dummyCourse4 = Course(id: 4, name: "Course 4", code: "C4", description: "The fourth course you must take", assignments: Assignment.dummyAssignmentListC4)
     
     static let dummyCourses = [
         dummyCourse1,

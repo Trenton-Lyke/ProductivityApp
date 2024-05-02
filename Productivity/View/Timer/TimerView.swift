@@ -46,7 +46,7 @@ func formatTime(hour: Int, minute: Int, second: Int) -> String {
 }
 
 struct TimerView: View {
-    @State private var selectedTimer: TimerType = .workTimer
+    
     @State private var timerHour: Int = 0
     @State private var timerMinute: Int = 0
     @State private var timerSecond: Int = 0
@@ -61,19 +61,11 @@ struct TimerView: View {
     @State var timer = Timer.publish(every: .infinity, on: .main, in: .common).autoconnect()
 
     
-    private let timerTypes: [TimerType] = [
-        .workTimer,
-        .breakTimer
-    ]
+
     
     var body: some View {
         NavigationView(title: "Timer") {
             VStack(spacing: 20){
-                Picker("Select a course", selection: $selectedTimer) {
-                    ForEach(timerTypes, id: \.self) { timerType in
-                        Text(timerType.name)
-                    }
-                }.pickerStyle(.segmented).disabled(timerStatus != .stopped)
                 HStack{
                     Picker("Hours", selection: $timerHour) {
                         ForEach(0...24, id: \.self) { hour in

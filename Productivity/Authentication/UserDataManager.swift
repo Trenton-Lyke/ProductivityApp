@@ -56,9 +56,9 @@ class UserDataManager : ObservableObject {
     }
     
     
-    func createAccount(firstName: String, lastName: String, username: String, password: String, onsuccess: (User) -> Void, onfailure: () -> Void) {
+    func createAccount(username: String, password: String, onsuccess: (User) -> Void, onfailure: () -> Void) {
         if username == "A" {
-            user = User(id: 1, name: "\(firstName) \(lastName)", courses: Course.dummyCourses)
+            user = User(id: 1, name: username, courses: Course.dummyCourses)
             
             if let currentUser = user {
                 onsuccess(currentUser)
@@ -88,7 +88,7 @@ class UserDataManager : ObservableObject {
             var courses: [Course] = []
             for course in currentUser.courses {
                 if courseId == course.id {
-                    let newCourse = Course(id: course.id, name: course.name, description: course.description, assignments: course.assignments + [newAssignment])
+                    let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: course.assignments + [newAssignment])
                     courses.append(newCourse)
                 } else {
                     courses.append(course)
@@ -115,13 +115,13 @@ class UserDataManager : ObservableObject {
                         assignments.append(newAssignment)
                     }
                 }
-                let newCourse = Course(id: course.id, name: course.name, description: course.description, assignments: assignments)
+                let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: assignments)
                 courses.append(newCourse)
             }
             for i in 0..<courses.count {
                 var course = courses[i]
                 if courseId == course.id && !course.assignments.contains(newAssignment){
-                    courses[i] = Course(id: course.id, name: course.name, description: course.description, assignments: course.assignments + [newAssignment])
+                    courses[i] = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: course.assignments + [newAssignment])
                 }
                 
             }
@@ -146,7 +146,7 @@ class UserDataManager : ObservableObject {
                         removedAssignment = assignment
                     }
                 }
-                let newCourse = Course(id: course.id, name: course.name, description: course.description, assignments: assignments)
+                let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: assignments)
                 courses.append(newCourse)
             }
             user = User(id: currentUser.id, name: currentUser.name, courses: courses)
@@ -156,13 +156,13 @@ class UserDataManager : ObservableObject {
         onfailure()
     }
     
-    func createCourse(name: String, description: String, onsuccess: (Course) -> Void, onfailure: () -> Void) {
+    func createCourse(name: String, code: String, description: String, onsuccess: (Course) -> Void, onfailure: () -> Void) {
         if let currentUser = user {
             var maxId = 0
             for course in currentUser.courses {
                 maxId = max(maxId, course.id)
             }
-            let newCourse = Course(id: maxId + 1, name: name, description: description, assignments: [])
+            let newCourse = Course(id: maxId + 1, name: name, code: code, description: description, assignments: [])
             let courses: [Course] = currentUser.courses + [newCourse]
 
             user = User(id: currentUser.id, name: currentUser.name, courses: courses)
@@ -172,9 +172,9 @@ class UserDataManager : ObservableObject {
         }
     }
     
-    func updateCourse(courseId: Int, name: String, description: String, assignments: [Assignment], onsuccess: (Course) -> Void, onfailure: () -> Void) {
+    func updateCourse(courseId: Int, name: String, code: String, description: String, assignments: [Assignment], onsuccess: (Course) -> Void, onfailure: () -> Void) {
         if let currentUser = user {
-            let newCourse = Course(id: courseId, name: name, description: description, assignments: assignments)
+            let newCourse = Course(id: courseId, name: name, code: code, description: description, assignments: assignments)
             var courses: [Course] = []
             for course in currentUser.courses {
                 if courseId != course.id {

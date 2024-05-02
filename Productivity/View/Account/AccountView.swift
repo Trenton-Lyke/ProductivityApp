@@ -122,18 +122,12 @@ struct CreateAccountView: View {
     @Binding var authMethod: AccountPage
     var isTemporaryAuth: Bool
     
-    @State private var firstName: String = ""
-    @State private var lastName: String = ""
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var showFailure = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20){
-            HStack{
-                BorderedTextField(title: "First name", placeholder: "Enter first name", text: $firstName)
-                BorderedTextField(title: "Last name", placeholder: "Enter last name", text: $lastName)
-            }
             BorderedTextField(title: "Username", placeholder: "Enter username", text: $username)
             BorderedSecureField(title: "Password", placeholder: "Enter password", text: $password)
             ErrorText(error: "* Unable to create account", showError: $showFailure)
@@ -149,7 +143,7 @@ struct CreateAccountView: View {
     
     private func createAccount() {
         print("login button clicked: \(username); \(password)")
-        UserDataManager.shared.createAccount(firstName: firstName, lastName: lastName, username: username, password: password) { user in
+        UserDataManager.shared.createAccount(username: username, password: password) { user in
             
             if isTemporaryAuth {
                 self.presentationMode.wrappedValue.dismiss()
