@@ -1,4 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
+import bcrypt
+import datetime
+import hashlib
+import os
 
 db = SQLAlchemy()
 
@@ -18,23 +22,40 @@ class User(db.Model):
 
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique = True)
+    password_digest = db.Column(db.String, nullable=False)
     timers = db.relationship("Timer", cascade="delete")
     courses = db.relationship(
         "Course", secondary=association_table, back_populates="users"
     )
+
+    session_token = db.Column(db.String, nullable=False, unique=False)
+    session_expiration = db.Column(db.DateTime, nullable=False, unique=False)
+    update_token = db.Column(db.String, nullable=False, unique=True)
 
     def __init__(self, **kwargs):
         """
         Initialize User Entry
         """
         self.name = kwargs.get("name")
+        self.password_digest = bcrypt.hashpw(
+            kwargs.get('password').encode('utf8'),
+            bcrypt.gensalt(rounds=13)
+        )
+        self.renew_session()
 
     def simple_serialize(self):
         """
         Serialize User object without courses
         """
         return {"id": self.id, "name": self.name}
+
+    def session_serialize(self):
+        return {
+            'session_token': self.session_token,
+            'session_expiration': str(self.session_expiration),
+            'update_token': self.update_token
+        }
 
     def serialize(self):
         """
@@ -45,6 +66,23 @@ class User(db.Model):
             "courses": [c.simple_serialize() for c in self.courses],
             "timers": [t.simple_serialize() for t in self.timers],
         }
+
+    def _urlsafe_base_64(self):
+        return hashlib.sha1(os.urandom(64)).hexdigest()
+
+    def renew_session(self):
+        self.session_token = self._urlsafe_base_64()
+        self.refresh_token = self._urlsafe_base_64()
+        self.session_expiration = datetime.datetime.now() + datetime.timedelta(days=1)
+
+    def verify_password(self, password):
+        return bcrypt.checkpw(password.encode('utf8'), self.password_digest)
+
+    def verify_session_token(self, session_token):
+        return session_token == self.session_token and datetime.datetime.now() < self.session_expiration
+
+    def verify_refresh_token(self, refresh_token):
+        return refresh_token == self.refresh_token
 
 
 class Course(db.Model):

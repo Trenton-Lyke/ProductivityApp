@@ -17,6 +17,14 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+def extract_token(request):
+    auth_header = request.headers.get("Authorization")
+    if auth_header is None:
+        return False, failure_response("Missing authorization header")
+    bearer_token = auth_header.replace("Bearer ", "").strip()
+    if not bearer_token:
+        return False, failure_response("Missing authorization header")
+    return True, bearer_token
 
 def success_response(data, code=200):
     """
@@ -48,6 +56,15 @@ def create_course():
     """
     Endpoint for creating a new course
     """
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token = session_token).first
+    if not user or not user.verify_session_token(session_token):
+        return failure_response('Invalid session token')
+
     body = json.loads(request.data)
     code = body.get("code", None)
     name = body.get("name", None)
@@ -90,7 +107,12 @@ def user_courses(user_id):
     """
     Endpoint for getting all a users courses
     """
+    success, session_token = extract_token(request)
+    if not success:
+        return session_token
     user = User.query.filter_by(id=user_id).first()
+    if not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     if user is None:
         return failure_response("User not found")
     return success_response({"courses": user.serialize().get("courses")})
@@ -101,11 +123,19 @@ def change_course(course_id):
     """
     Endpoint for changing a course name and/or code
     """
+    success, session_token = extract_token(request)
+    if not success:
+        return session_token
+    
+    user = User.query.filter_by(session_token = session_token).first()
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    
     body = json.loads(request.data)
     name = body.get("name")
     code = body.get("code")
     description = body.get("description", None)
-
+    
     course = Course.query.filter_by(id=course_id).first()
     
     if course == None:
@@ -122,14 +152,18 @@ def change_course(course_id):
     db.session.commit()
     return success_response(course.serialize())
 
-    
-
-
 @app.route("/api/course/<int:course_id>/", methods=["DELETE"])
 def delete_course(course_id):
     """
     Endpoint for deleting course
     """
+    success, session_token = extract_token(request)
+    if not success:
+        return session_token
+    user = User.query.filter_by(session_token = session_token).first()
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    
     course = Course.query.filter_by(id=course_id).first()
     if course is None:
         return failure_response("Course not found")
@@ -145,22 +179,21 @@ def create_user():
     """
     body = json.loads(request.data)
     name = body.get("name", None)
-
+    password = body.get("password", None)
     error = ""
 
-    if name is None:
-        error += "Missing name in request body. "
+    if name is None or password is None:
+        error += "Missing name or password in request body. "
 
     error = error.strip()
 
     if error != "":
         return failure_response(error, 400)
 
-    new_user = User(name=name)
+    new_user = User(name=name, password=password)
     db.session.add(new_user)
     db.session.commit()
     return success_response(new_user.serialize(), 201)
-
 
 @app.route("/api/users/<int:user_id>/")
 def get_user(user_id):
@@ -172,38 +205,78 @@ def get_user(user_id):
         return failure_response("User not found")
     return success_response(user.serialize())
 
-
-@app.route("/api/courses/<int:course_id>/add/", methods=["POST"])
-def add_user_to_course(course_id):
+@app.route("/api/users/login/", methods=["POST"])
+def login():
+    """
+    Endpoint to verify user's login credentials
+    """
     body = json.loads(request.data)
-    user_id = body.get("user_id", None)
+    name = body.get("name", None)
+    password = body.get("password", None)
+    if name is None or password is None:
+        error += "Missing name or password in request body. "
+    user = User.query.filter_by(name=name).first()
+    user_valid = user.verify_password(password)
+    if user_valid == False:
+        return failure_response("Username and/or password is incorrect.")
+    return success_response(user.session.serialize())
 
-    error = ""
+@app.route("/logout/", methods=["POST"])
+def logout():
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
 
-    if user_id is None:
-        error += "Missing user_id in request body. "
+    user = User.query.filter_by(session_token=session_token).first()
 
-    error = error.strip()
-
-    if error != "":
-        return failure_response(error, 400)
-
-    user = User.query.filter_by(id=user_id).first()
-    if user is None:
-        return failure_response("User not found")
-
-    course = Course.query.filter_by(id=course_id).first()
-    if course is None:
-        return failure_response("Course not found")
-
-    course.users.append(user)
-
+    if not user or not User.verify_session_token(session_token):
+        return failure_response("Invalid Session Token")
+    user.session_expiration = datetime.dateTime.now()
     db.session.commit()
-    return success_response(course.serialize())
+    return success_response("Logged Out")
+
+
+# @app.route("/api/courses/<int:course_id>/add/", methods=["POST"])
+# def add_user_to_course(course_id):
+#     body = json.loads(request.data)
+#     user_id = body.get("user_id", None)
+
+#     error = ""
+
+#     if user_id is None:
+#         error += "Missing user_id in request body. "
+
+#     error = error.strip()
+
+#     if error != "":
+#         return failure_response(error, 400)
+
+#     user = User.query.filter_by(id=user_id).first()
+#     if user is None:
+#         return failure_response("User not found")
+
+#     course = Course.query.filter_by(id=course_id).first()
+#     if course is None:
+#         return failure_response("Course not found")
+
+#     course.users.append(user)
+
+#     db.session.commit()
+#     return success_response(course.serialize())
 
 
 @app.route("/api/courses/<int:course_id>/assignment/", methods=["POST"])
 def add_assignment_to_course(course_id):
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token = session_token).first
+    if not user or not user.verify_session_token(session_token):
+        return failure_response('Invalid session token')
+
     body = json.loads(request.data)
     name = body.get("name", None)
     description = body.get("description", None)
@@ -299,6 +372,15 @@ def get_timers(user_id):
     """
     Endpoint for getting timers from specific user
     """
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token = session_token).first
+    if not user or not user.verify_session_token(session_token):
+        return failure_response('Invalid session token')
+        
     timers = Timer.query.filter_by(user_id=user_id).all()
     print(timers)
     if timers is None:
@@ -337,6 +419,15 @@ def get_leader_board_position(time_span, user_id):
     """
     Endpoint for user's position in work time leader board
     """
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token = session_token).first
+    if not user or not user.verify_session_token(session_token):
+        return failure_response('Invalid session token')
+
     if (
         time_span != "all"
         and time_span != "day"
