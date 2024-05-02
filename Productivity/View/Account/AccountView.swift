@@ -57,8 +57,11 @@ struct AuthenticatedView: View {
             VStack(spacing: 20){
                 Text("Welcome \(UserDataManager.shared.getName())")
                     .font(.largeTitle)
-
-                Text("\(completedAssignmentCount) out of \(assignmentCount) assignments completed").font(.title3)
+                VStack(alignment: .leading, spacing: 20){
+                    Text("\(completedAssignmentCount) out of \(assignmentCount) assignments completed").font(.title3)
+                    Text("Ranked 1 for time spent working among users").font(.title3)
+                }
+                
                 Button {
                     UserDataManager.shared.logout()
                     authMethod = .login

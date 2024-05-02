@@ -16,7 +16,7 @@ struct AssignmentsView: View {
                 ForEach(userManager.getCourses(), id: \.id) { course in
                     Section {
                         DisclosureGroup(course.name) {
-                            ForEach(course.assignments, id: \.id) { assignment in
+                            ForEach(course.assignments, id: \.self) { assignment in
                                 AssignmentRow(assignment: assignment)
                             }
                             NavigationLink {
@@ -53,26 +53,30 @@ struct AssignmentsView: View {
 }
 
 struct AssignmentRow: View {
-    let assignment: Assignment
-    @State private var done: Bool
+    @State private var assignment: Assignment
+    
     
     init(assignment: Assignment) {
-        self.assignment = assignment
-        self._done = State(initialValue: assignment.done)
+        self._assignment = State(initialValue: assignment)
     }
 
     var body: some View {
         
             NavigationLink {
-                AssignmentView(assignment: assignment)
+                AssignmentView(assignment: $assignment)
             } label: {
                 HStack {
                 
-                Image(systemName: done ? "circle.fill" : "circle")
+                    Image(systemName: assignment.done ? "circle.fill" : "circle")
                     .imageScale(.large)
                     .foregroundStyle(.pink)
                     .onTapGesture {
-                        done.toggle()
+                        UserDataManager.shared.updateAssignment(assignmentId: assignment.id, name: assignment.name, description: assignment.description, courseId: assignment.courseId, dueDate: assignment.dueDate, done: !assignment.done) { assignment in
+
+                        } onfailure: {
+                            
+                        }
+
                     }
 
                 Text(assignment.name)

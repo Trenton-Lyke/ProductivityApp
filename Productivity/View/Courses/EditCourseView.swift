@@ -9,16 +9,18 @@ import SwiftUI
 import AlertToast
 
 struct EditCourseView: View {
-    var course: Course
+    var courseId: Int
     @State private var name: String
     @State private var description: String
     @State private var showSuccess = false
     @State private var showFailure = false
+    private var currentCourse: Course
     
-    init(course: Course) {
-        self.course = course
-        name = self.course.name
-        description = self.course.description
+    init(courseId: Int) {
+        self.courseId = courseId
+        currentCourse = UserDataManager.shared.getCourse(id: courseId)
+        name = currentCourse.name
+        description = currentCourse.description
     }
     
     var body: some View {
@@ -40,7 +42,8 @@ struct EditCourseView: View {
     
     private func editCourse() {
         print("create course button clicked: \(name); \(description)")
-        UserDataManager.shared.updateCourse(courseId: course.id, name: name, description: description) { course in
+        UserDataManager.shared.updateCourse(courseId: courseId, name: name, description: description, assignments: currentCourse.assignments) { course in
+
             showSuccess.toggle()
         } onfailure: {
             showFailure.toggle()
@@ -48,7 +51,3 @@ struct EditCourseView: View {
     }
 }
 
-
-#Preview {
-    EditCourseView(course: Course.dummyCourse1)
-}

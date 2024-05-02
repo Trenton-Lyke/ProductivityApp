@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct CourseView: View {
-    var course: Course
+    var courseId: Int
+    @StateObject private var userManager = UserDataManager.shared
     
     var body: some View {
         NavigationView(title: "Course") {
             Spacer()
             VStack{
                 HStack{
-                    Text(course.name)
+                    Text(userManager.getCourse(id: courseId).name)
                         .font(.largeTitle)
                     NavigationLink {
-                        EditCourseView(course: course)
+                        EditCourseView(courseId: courseId)
                     } label: {
                         Image(systemName: "square.and.pencil")
                             .imageScale(.large)
@@ -27,10 +28,10 @@ struct CourseView: View {
                 }
                 
                 Spacer()
-                Text(course.description)
+                Text(userManager.getCourse(id: courseId).description)
                 List {
                     Section {
-                        ForEach(course.assignments, id: \.id) { assignment in
+                        ForEach(userManager.getCourse(id: courseId).assignments, id: \.self) { assignment in
                             HStack{
                                 Text(assignment.name)
                             }
@@ -43,8 +44,4 @@ struct CourseView: View {
         }
             
     }
-}
-
-#Preview {
-    CourseView(course: Course.dummyCourse1)
 }

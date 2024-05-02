@@ -14,21 +14,8 @@ struct CoursesView: View {
         NavigationView(title: "Courses") {
             List {
                 Section {
-                    ForEach(userManager.getCourses(), id: \.id) { course in
-                        NavigationLink {
-                            CourseView(course: course)
-                        } label: {
-                            HStack{
-                                Text(course.name)
-                                Spacer()
-                                Image(systemName: "trash")
-                                    .imageScale(.large)
-                                    .foregroundStyle(.red)
-                                    .onTapGesture {
-                                        UserDataManager.shared.deleteCourse(courseId: course.id, onsuccess: {_ in }, onfailure: {})
-                                    }
-                            }
-                        }
+                    ForEach(userManager.getCourses(), id: \.self) { course in
+                        CourseRow(course: course)
                     }
                 }
 
@@ -53,6 +40,30 @@ struct CoursesView: View {
         }
     }
 }
+
+struct CourseRow: View {
+    let course: Course
+    
+    
+    var body: some View {
+        NavigationLink {
+            CourseView(courseId: course.id)
+        } label: {
+            HStack{
+                Text(course.name)
+                Spacer()
+                Image(systemName: "trash")
+                    .imageScale(.large)
+                    .foregroundStyle(.red)
+                    .onTapGesture {
+                        UserDataManager.shared.deleteCourse(courseId: course.id, onsuccess: {_ in }, onfailure: {})
+                    }
+            }
+        }
+    }
+}
+
+
 
 #Preview {
     CoursesView()

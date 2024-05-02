@@ -9,7 +9,7 @@ import SwiftUI
 import AlertToast
 
 struct EditAssignmentView: View {
-    var assignment: Assignment
+    @Binding var assignmentBinding: Assignment
     
     @State private var name: String
     @State private var description: String
@@ -18,12 +18,12 @@ struct EditAssignmentView: View {
     @State private var showSuccess = false
     @State private var showFailure = false
     
-    init(assignment: Assignment) {
-        self.assignment = assignment
-        name = self.assignment.name
-        description = self.assignment.description
-        dueDate = self.assignment.dueDate
-        selectedCourseId = self.assignment.courseId
+    init(assignmentBinding: Binding<Assignment>, assignment: Assignment) {
+        self._assignmentBinding = assignmentBinding
+        name = assignment.name
+        description = assignment.description
+        dueDate = assignment.dueDate
+        selectedCourseId = assignment.courseId
     }
     
     var body: some View {
@@ -67,8 +67,8 @@ struct EditAssignmentView: View {
     }
     
     private func editAssignment() {
-        print(selectedCourseId)
-        UserDataManager.shared.updateAssignment(assignmentId: assignment.id, name: name, description: description, courseId: selectedCourseId, dueDate: dueDate) { assignment in
+        UserDataManager.shared.updateAssignment(assignmentId: assignmentBinding.id, name: name, description: description, courseId: selectedCourseId, dueDate: dueDate, done: assignmentBinding.done) { assignment in
+            assignmentBinding = assignment
             showSuccess.toggle()
         } onfailure: {
             showFailure.toggle()
@@ -77,6 +77,3 @@ struct EditAssignmentView: View {
     }
 }
 
-#Preview {
-    EditAssignmentView(assignment: Assignment.dummyAssignment)
-}

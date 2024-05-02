@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct AssignmentView: View {
-    var assignment: Assignment
+
+    @Binding var assignment: Assignment
+    
+    init(assignment: Binding<Assignment>) {
+        self._assignment = assignment
+    }
     
     var body: some View {
         NavigationView(title: "Assignment") {
@@ -19,7 +24,7 @@ struct AssignmentView: View {
                         Text(assignment.name)
                             .font(.largeTitle)
                         NavigationLink {
-                            EditAssignmentView(assignment: assignment)
+                            EditAssignmentView(assignmentBinding: $assignment, assignment: assignment)
                         } label: {
                             Image(systemName: "square.and.pencil")
                                 .imageScale(.large)
@@ -34,8 +39,4 @@ struct AssignmentView: View {
             
         }
     }
-}
-
-#Preview {
-    AssignmentView(assignment: Assignment.dummyAssignment)
 }
