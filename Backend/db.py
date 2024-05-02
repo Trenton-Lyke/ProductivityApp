@@ -39,7 +39,7 @@ class User(db.Model):
         """
         self.name = kwargs.get("name")
         self.password_digest = bcrypt.hashpw(
-            kwargs.get('password').encode('utf8'),
+            kwargs.get('password_digest').encode('utf8'), 
             bcrypt.gensalt(rounds=13)
         )
         self.renew_session()
@@ -72,7 +72,7 @@ class User(db.Model):
 
     def renew_session(self):
         self.session_token = self._urlsafe_base_64()
-        self.refresh_token = self._urlsafe_base_64()
+        self.update_token = self._urlsafe_base_64()
         self.session_expiration = datetime.datetime.now() + datetime.timedelta(days=1)
 
     def verify_password(self, password):
@@ -81,8 +81,8 @@ class User(db.Model):
     def verify_session_token(self, session_token):
         return session_token == self.session_token and datetime.datetime.now() < self.session_expiration
 
-    def verify_refresh_token(self, refresh_token):
-        return refresh_token == self.refresh_token
+    def verify_update_token(self, update_token):
+        return update_token == self.update_token
 
 
 class Course(db.Model):
