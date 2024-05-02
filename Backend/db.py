@@ -46,7 +46,7 @@ class User(db.Model):
 
     def simple_serialize(self):
         """
-        Serialize User object without courses
+        Serialize User object without courses or timers
         """
         return {"id": self.id, "name": self.name}
 
@@ -63,7 +63,7 @@ class User(db.Model):
         """
         return {
             **self.simple_serialize(),
-            "courses": [c.simple_serialize() for c in self.courses],
+            "courses": [c.user_data_serialize() for c in self.courses],
             "timers": [t.simple_serialize() for t in self.timers],
         }
 
@@ -114,13 +114,21 @@ class Course(db.Model):
         """
         return {"id": self.id, "name": self.name, "code": self.code, "description": self.description}
 
+    def user_data_serialize(self):
+        """
+        Serialize Course with assignments
+        """
+        return {
+            **self.simple_serialize(),
+            "assignments": [a.simple_serialize() for a in self.assignments],
+        }
+
     def serialize(self):
         """
         Serialize Course
         """
         return {
-            **self.simple_serialize(),
-            "assignments": [a.simple_serialize() for a in self.assignments],
+            **self.user_data_serialize(),
             "users": [u.simple_serialize() for u in self.users],
         }
 
@@ -159,6 +167,7 @@ class Assignment(db.Model):
             "description": self.description,
             "due_date": self.due_date,
             "done": self.done,
+            "course_id": self.course_id,
         }
 
     def serialize(self):
