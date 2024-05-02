@@ -219,7 +219,7 @@ def login():
     user_valid = user.verify_password(password)
     if user_valid == False:
         return failure_response("Username and/or password is incorrect.")
-    return success_response(user.session.serialize())
+    return success_response(user.session_serialize())
 
 @app.route("/logout/", methods=["POST"])
 def logout():
