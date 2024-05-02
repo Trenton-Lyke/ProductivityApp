@@ -2,15 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-student_association_table = db.Table(
-    "student_association",
-    db.Model.metadata,
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
-    db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
-)
-
-instructor_association_table = db.Table(
-    "instructor_association",
+association_table = db.Table(
+    "association",
     db.Model.metadata,
     db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
     db.Column("course_id", db.Integer, db.ForeignKey("course.id")),
@@ -26,12 +19,9 @@ class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
-    netid = db.Column(db.String, nullable=False)
-    student_courses = db.relationship(
-        "Course", secondary=student_association_table, back_populates="students"
-    )
-    instructor_courses = db.relationship(
-        "Course", secondary=instructor_association_table, back_populates="instructors"
+    timers = db.relationship("Timer", cascade="delete")
+    courses = db.relationship(
+        "Course", secondary=association_table, back_populates="users"
     )
 
     def __init__(self, **kwargs):
@@ -39,13 +29,12 @@ class User(db.Model):
         Initialize User Entry
         """
         self.name = kwargs.get("name")
-        self.netid = kwargs.get("netid")
 
     def simple_serialize(self):
         """
         Serialize User object without courses
         """
-        return {"id": self.id, "name": self.name, "netid": self.netid}
+        return {"id": self.id, "name": self.name}
 
     def serialize(self):
         """
@@ -53,8 +42,8 @@ class User(db.Model):
         """
         return {
             **self.simple_serialize(),
-            "courses": [c.simple_serialize() for c in self.student_courses]
-            + [c.simple_serialize() for c in self.instructor_courses],
+            "courses": [c.simple_serialize() for c in self.courses],
+            "timers": [t.simple_serialize() for t in self.timers],
         }
 
 
@@ -65,30 +54,25 @@ class Course(db.Model):
 
     __tablename__ = "course"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    code = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
     assignments = db.relationship("Assignment", cascade="delete")
-    instructors = db.relationship(
-        "User",
-        secondary=instructor_association_table,
-        back_populates="instructor_courses",
-    )
-    students = db.relationship(
-        "User", secondary=student_association_table, back_populates="student_courses"
+    users = db.relationship(
+        "User", secondary=association_table, back_populates="courses"
     )
 
     def __init__(self, **kwargs):
         """
         Initialize Course Object
         """
-        self.code = kwargs.get("code")
         self.name = kwargs.get("name")
+        self.description = kwargs.get("description")
 
     def simple_serialize(self):
         """
-        Serialize Course without assignments, instructors, or students
+        Serialize Course without assignments or users
         """
-        return {"id": self.id, "code": self.code, "name": self.name}
+        return {"id": self.id, "name": self.name, "description": self.description}
 
     def serialize(self):
         """
@@ -97,8 +81,7 @@ class Course(db.Model):
         return {
             **self.simple_serialize(),
             "assignments": [a.simple_serialize() for a in self.assignments],
-            "instructors": [i.simple_serialize() for i in self.instructors],
-            "students": [s.simple_serialize() for s in self.students],
+            "users": [u.simple_serialize() for u in self.users],
         }
 
 
@@ -109,8 +92,10 @@ class Assignment(db.Model):
 
     __tablename__ = "assignment"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
     due_date = db.Column(db.Integer, nullable=False)
+    done = db.Column(db.Boolean, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     course = db.relationship("Course", foreign_keys="Assignment.course_id")
 
@@ -118,18 +103,72 @@ class Assignment(db.Model):
         """
         Initialize Assignment Object
         """
-        self.title = kwargs.get("title")
+        self.name = kwargs.get("name")
+        self.description = kwargs.get("description")
         self.due_date = kwargs.get("due_date")
+        self.done = kwargs.get("done")
         self.course_id = kwargs.get("course_id")
 
     def simple_serialize(self):
         """
         Serialize Assignment without course
         """
-        return {"id": self.id, "title": self.title, "due_date": self.due_date}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "due_date": self.due_date,
+            "done": self.done,
+        }
 
     def serialize(self):
         """
         Serialize Assignment
         """
         return {**self.simple_serialize(), "course": self.course.simple_serialize()}
+
+
+class Timer(db.Model):
+    """
+    Timer Model
+    """
+
+    __tablename__ = "timer"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    elapsed_time = db.Column(db.Integer, nullable=False)
+    hours = db.Column(db.Integer, nullable=False)
+    minutes = db.Column(db.Integer, nullable=False)
+    seconds = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", foreign_keys="Timer.user_id")
+
+    def __init__(self, **kwargs):
+        """
+        Initialize Assignment Object
+        """
+        self.elapsed_time = kwargs.get("elapsed_time")
+        self.hours = kwargs.get("hours")
+        self.minutes = kwargs.get("minutes")
+        self.seconds = kwargs.get("seconds")
+        self.date = kwargs.get("date")
+        self.user_id = kwargs.get("user_id")
+
+    def simple_serialize(self):
+        """
+        Serialize Assignment without course
+        """
+        return {
+            "id": self.id,
+            "elapsed_time": self.elapsed_time,
+            "hours": self.hours,
+            "minutes": self.minutes,
+            "seconds": self.seconds,
+            "date": self.date,
+        }
+
+    def serialize(self):
+        """
+        Serialize Assignment
+        """
+        return {**self.simple_serialize(), "user": self.user.simple_serialize()}
