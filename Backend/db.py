@@ -55,6 +55,7 @@ class Course(db.Model):
     __tablename__ = "course"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
+    code = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     assignments = db.relationship("Assignment", cascade="delete")
     users = db.relationship(
@@ -66,13 +67,14 @@ class Course(db.Model):
         Initialize Course Object
         """
         self.name = kwargs.get("name")
+        self.code = kwargs.get("code")
         self.description = kwargs.get("description")
 
     def simple_serialize(self):
         """
         Serialize Course without assignments or users
         """
-        return {"id": self.id, "name": self.name, "description": self.description}
+        return {"id": self.id, "name": self.name, "code": self.code, "description": self.description}
 
     def serialize(self):
         """

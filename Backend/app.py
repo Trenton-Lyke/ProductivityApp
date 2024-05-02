@@ -34,6 +34,7 @@ def failure_response(message, code=404):
 
 # your routes here
 @app.route("/")
+@app.route("/")
 @app.route("/api/courses/")
 def get_courses():
     """
@@ -42,20 +43,23 @@ def get_courses():
     return success_response({"courses": [c.serialize() for c in Course.query.all()]})
 
 
-@app.route("/api/courses/", methods=["POST"])
+@app.route("/api/course/", methods=["POST"])
 def create_course():
     """
     Endpoint for creating a new course
     """
     body = json.loads(request.data)
+    code = body.get("code", None)
     name = body.get("name", None)
     description = body.get("description", None)
 
     error = ""
 
+    if code is None:
+        error += "Missing code in request body. "
+
     if name is None:
         error += "Missing name in request body. "
-
     if description is None:
         error += "Missing description in request body. "
 
@@ -64,13 +68,13 @@ def create_course():
     if error != "":
         return failure_response(error, 400)
 
-    new_course = Course(name=name, description=description)
+    new_course = Course(code=code, name=name, description=description)
     db.session.add(new_course)
     db.session.commit()
     return success_response(new_course.serialize(), 201)
 
 
-@app.route("/api/courses/<int:course_id>/")
+@app.route("/api/course/<int:course_id>/")
 def get_course(course_id):
     """
     Endpoint for getting specific course
@@ -81,7 +85,47 @@ def get_course(course_id):
     return success_response(course.serialize())
 
 
-@app.route("/api/courses/<int:course_id>/", methods=["DELETE"])
+@app.route("/api/courses/<int:user_id>/")
+def user_courses(user_id):
+    """
+    Endpoint for getting all a users courses
+    """
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found")
+    return success_response({"courses": user.serialize().get("courses")})
+    
+
+@app.route("/api/course/<course_id>/", methods=["POST"])
+def change_course(course_id):
+    """
+    Endpoint for changing a course name and/or code
+    """
+    body = json.loads(request.data)
+    name = body.get("name")
+    code = body.get("code")
+    description = body.get("description", None)
+
+    course = Course.query.filter_by(id=course_id).first()
+    
+    if course == None:
+        return failure_response("Course not found")
+    if name == None and code == None and description == None:
+        return failure_response("Bad request")
+    if name != None:
+        course.name = name
+    if code != None:
+        course.code = code
+    if description != None:
+        course.description = description
+    
+    db.session.commit()
+    return success_response(course.serialize())
+
+    
+
+
+@app.route("/api/course/<int:course_id>/", methods=["DELETE"])
 def delete_course(course_id):
     """
     Endpoint for deleting course
