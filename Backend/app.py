@@ -190,7 +190,7 @@ def create_user():
     if error != "":
         return failure_response(error, 400)
 
-    new_user = User(name=name, password=password)
+    new_user = User(name=name, password_digest=password)
     db.session.add(new_user)
     db.session.commit()
     return success_response(new_user.serialize(), 201)
