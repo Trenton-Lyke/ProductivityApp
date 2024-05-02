@@ -19,6 +19,7 @@
 		D893FFEA2BDFF3A50042851B /* NavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFE92BDFF3A50042851B /* NavigationView.swift */; };
 		D893FFEF2BE0009D0042851B /* TextButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFEE2BE0009D0042851B /* TextButton.swift */; };
 		D893FFF42BE008500042851B /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D893FFF32BE008500042851B /* UserDataManager.swift */; };
+		D8A677EF2BE40D0800C6AE82 /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A677EE2BE40D0800C6AE82 /* Timer.swift */; };
 		D8CD9EFB2BE01E600003053A /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CD9EFA2BE01E600003053A /* Course.swift */; };
 		D8CD9EFD2BE01F860003053A /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CD9EFC2BE01F860003053A /* User.swift */; };
 		D8CD9F022BE0218E0003053A /* Assignment+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CD9F012BE0218E0003053A /* Assignment+Extension.swift */; };
@@ -77,6 +78,7 @@
 		D893FFE92BDFF3A50042851B /* NavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationView.swift; sourceTree = "<group>"; };
 		D893FFEE2BE0009D0042851B /* TextButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextButton.swift; sourceTree = "<group>"; };
 		D893FFF32BE008500042851B /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
+		D8A677EE2BE40D0800C6AE82 /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		D8CD9EFA2BE01E600003053A /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		D8CD9EFC2BE01F860003053A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		D8CD9F012BE0218E0003053A /* Assignment+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Assignment+Extension.swift"; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				D8F986592BDD4AB800A5A956 /* Assignment.swift */,
 				D8CD9EFA2BE01E600003053A /* Course.swift */,
 				D8CD9EFC2BE01F860003053A /* User.swift */,
+				D8A677EE2BE40D0800C6AE82 /* Timer.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -462,6 +465,7 @@
 				D893FFE62BDFEE6C0042851B /* AssignmentsView.swift in Sources */,
 				D8CD9EFB2BE01E600003053A /* Course.swift in Sources */,
 				D8F7C3422BE0683D00F2C6B7 /* EditCourseView.swift in Sources */,
+				D8A677EF2BE40D0800C6AE82 /* Timer.swift in Sources */,
 				D893FFD92BDFEA8E0042851B /* TabsView.swift in Sources */,
 				D85D81422BE29F7500428677 /* ToggleField.swift in Sources */,
 				D8F986622BDD6A5100A5A956 /* NetworkManager.swift in Sources */,

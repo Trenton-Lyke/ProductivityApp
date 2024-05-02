@@ -34,6 +34,12 @@ struct CreateCourseView: View {
     }
     
     private func createCourse() {
+        
+        NetworkManager.shared.getUserTimers(userId: 1) { timers in
+            print(timers)
+        }
+        
+        
         print("create course button clicked: \(name); \(description)")
         UserDataManager.shared.createCourse(name: name, description: description) { course in
             name = ""
