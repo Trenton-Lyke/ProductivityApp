@@ -61,7 +61,7 @@ def create_course():
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token = session_token).first
+    user = User.query.filter_by(session_token = session_token).first()
     if not user or not user.verify_session_token(session_token):
         return failure_response('Invalid session token')
 
