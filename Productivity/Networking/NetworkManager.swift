@@ -221,24 +221,55 @@ class NetworkManager {
         }
     }
     
-    func updateAssignment(sessionToken: String, courseId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
+//    func updateAssignment(sessionToken: String, courseId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
+//        let headers: HTTPHeaders = [
+//            "Authorization": "Bearer \(sessionToken)"
+//        ]
+//        let params: Parameters = [
+//            "name": name,
+//            "description": description,
+//            "due_date": dueDate.timeIntervalSince1970,
+//            "done": done
+//        ]
+//        AF.request("\(devEndpoint)/api/courses/\(courseId)/assignment/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+//            switch resp.result{
+//                case .success(let data):
+//                    do{
+//                        let decoder = JSONDecoder()
+//                        decoder.dateDecodingStrategy = .secondsSince1970
+//                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+//                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+//                        handler(jsonData)
+//                    } catch {
+//                        handler(nil)
+//                        print(error.localizedDescription)
+//                    }
+//                case .failure(let error):
+//                    handler(nil)
+//                    print(error.localizedDescription)
+//            }
+//        }
+//    }
+
+    func createTimer(sessionToken: String, elapsedTime: Int, hours: Int, minutes: Int, seconds: Int, date: Date, handler: @escaping (_ course: TimerData?) -> (Void)) {
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(sessionToken)"
         ]
         let params: Parameters = [
-            "name": name,
-            "description": description,
-            "due_date": dueDate.timeIntervalSince1970,
-            "done": done
+            "elapsed_time": elapsedTime,
+            "hours": hours,
+            "minutes": minutes,
+            "seconds": seconds,
+            "date": date.timeIntervalSince1970
         ]
-        AF.request("\(devEndpoint)/api/courses/\(courseId)/assignment/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+        AF.request("\(devEndpoint)/api/timer/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
             switch resp.result{
                 case .success(let data):
                     do{
                         let decoder = JSONDecoder()
                         decoder.dateDecodingStrategy = .secondsSince1970
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+                        let jsonData: TimerData = try decoder.decode(TimerData.self, from: data!)
                         handler(jsonData)
                     } catch {
                         handler(nil)
@@ -250,7 +281,6 @@ class NetworkManager {
             }
         }
     }
-
     
 //    func getUserSubtasks(userId: Int, parentTaskId: Int, handler: @escaping (_ apiData: [Assignment]) -> (Void)) {
 //        AF.request("\(devEndpoint)/api/tasks/\(userId)/subtasks/\(parentTaskId)/", method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil, interceptor: nil).response{ resp in

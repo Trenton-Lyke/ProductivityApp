@@ -139,25 +139,55 @@ class UserDataManager : ObservableObject {
         }
     }
     
+//    func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
+//        if !isLoggedIn() {
+//            onfailure()
+//            return
+//        }
+//        guard let currentSession = session else {
+//            onfailure()
+//            return
+//        }
+//        NetworkManager.shared.updateAssignment(sessionToken: currentSession.sessionToken, courseId: courseId, assignmentId: assignmentId, name: name, description: description, dueDate: dueDate, done: done) { [weak self] assignment in
+//            guard let self = self else {
+//                onfailure()
+//                return
+//            }
+//            if let assignment = assignment {
+//                updateUserData(callback: {onsuccess(assignment)})
+//            } else {
+//                onfailure()
+//            }
+//        }
+//    }
+    
     func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
-        if !isLoggedIn() {
-            onfailure()
-            return
-        }
-        guard let currentSession = session else {
-            onfailure()
-            return
-        }
-        NetworkManager.shared.updateAssignment(sessionToken: currentSession.sessionToken, courseId: courseId, assignmentId: assignmentId, name: name, description: description, dueDate: dueDate, done: done) { [weak self] assignment in
-            guard let self = self else {
-                onfailure()
-                return
+        if let currentUser = user {
+            let newAssignment = Assignment(id: assignmentId, name: name, description: description, dueDate: dueDate, done: done, courseId: courseId)
+            var courses: [Course] = []
+            for course in currentUser.courses {
+                var assignments: [Assignment] = []
+                for assignment in course.assignments {
+                    if assignment.id != assignmentId {
+                        assignments.append(assignment)
+                    } else if courseId == course.id {
+                        assignments.append(newAssignment)
+                    }
+                }
+                let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: assignments)
+                courses.append(newCourse)
             }
-            if let assignment = assignment {
-                updateUserData(callback: {onsuccess(assignment)})
-            } else {
-                onfailure()
+            for i in 0..<courses.count {
+                let course = courses[i]
+                if courseId == course.id && !course.assignments.contains(newAssignment){
+                    courses[i] = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: course.assignments + [newAssignment])
+                }
+                
             }
+            user = User(id: currentUser.id, name: currentUser.name, courses: courses)
+            onsuccess(newAssignment)
+        } else {
+            onfailure()
         }
     }
     
@@ -244,6 +274,28 @@ class UserDataManager : ObservableObject {
             }
             if let removedCourse = removedCourse {
                 updateUserData(callback: {onsuccess(removedCourse)})
+            } else {
+                onfailure()
+            }
+        }
+    }
+    
+    func addTimer(elapsedTime: Int, hours: Int, minutes: Int, seconds: Int, onsuccess: @escaping (TimerData) -> Void, onfailure: @escaping () -> Void) {
+        if !isLoggedIn() {
+            onfailure()
+            return
+        }
+        guard let currentSession = session else {
+            onfailure()
+            return
+        }
+        NetworkManager.shared.createTimer(sessionToken: currentSession.sessionToken, elapsedTime: elapsedTime, hours: hours, minutes: minutes, seconds: seconds, date: Date()){ [weak self] timer in
+            guard let self = self else {
+                onfailure()
+                return
+            }
+            if let timer = timer {
+                updateUserData(callback: {onsuccess(timer)})
             } else {
                 onfailure()
             }

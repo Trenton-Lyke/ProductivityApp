@@ -27,7 +27,7 @@ func formatTime(hour: Int, minute: Int, second: Int) -> String {
 }
 
 struct TimerView: View {
-    
+    @StateObject private var userManager = UserDataManager.shared
     @State private var timerHour: Int = 0
     @State private var timerMinute: Int = 0
     @State private var timerSecond: Int = 0
@@ -108,7 +108,15 @@ struct TimerView: View {
                             
                         }
                         TextButton(title: "Stop", foregroundColor: .white, backgroundColor: .red) {
-                            timerStatus = .stopped
+                            if timerStatus != .stopped {
+                                userManager.addTimer(elapsedTime: currentlyElapsedTime, hours: timerHour, minutes: timerMinute, seconds: timerSecond) { _ in
+                                    
+                                } onfailure: {
+                                    
+                                }
+                                timer.upstream.connect().cancel()
+                                timerStatus = .stopped
+                            }
                         }
                     }
                 } else {
@@ -125,6 +133,11 @@ struct TimerView: View {
             
         }.onReceive(timer) { firedDate in
             if currentHour == 0 && currentMinute == 0 && currentSecond == 0 {
+                userManager.addTimer(elapsedTime: timerDurationInSeconds, hours: timerHour, minutes: timerMinute, seconds: timerSecond) { _ in
+                    print("success")
+                } onfailure: {
+                    print("failure")
+                }
                 timerStatus = .alarming
                 timer.upstream.connect().cancel()
                 SoundPlayer.shared.playSound(forResource: "alarm_clock", withExtension: "mp3")

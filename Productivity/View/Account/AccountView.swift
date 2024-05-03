@@ -41,6 +41,7 @@ struct AccountView: View {
 
 struct AuthenticatedView: View {
     @Binding var authMethod: AccountPage
+    @StateObject private var userManager = UserDataManager.shared
     @State private var showFailure = false
     private let assignmentCount: Int
     private let completedAssignmentCount: Int

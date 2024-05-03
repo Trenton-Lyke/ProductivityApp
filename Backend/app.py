@@ -424,13 +424,21 @@ def add_assignment_to_course(course_id):
 
 @app.route("/api/timer/", methods=["POST"])
 def add_timer_to_user():
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token=session_token).first()
+    if not user or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
     body = json.loads(request.data)
     elapsed_time = body.get("elapsed_time", None)
     hours = body.get("hours", None)
     minutes = body.get("minutes", None)
     seconds = body.get("seconds", None)
     date = body.get("date", None)
-    user_id = body.get("user_id", None)
 
     error = ""
 
@@ -444,15 +452,13 @@ def add_timer_to_user():
         error += "Missing seconds in request body. "
     if date is None:
         error += "Missing date in request body. "
-    if user_id is None:
-        error += "Missing user_id in request body. "
 
     error = error.strip()
 
     if error != "":
         return failure_response(error, 400)
 
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=user.id).first()
     if user is None:
         return failure_response("User not found")
 
@@ -462,7 +468,7 @@ def add_timer_to_user():
         minutes=minutes,
         seconds=seconds,
         date=date,
-        user_id=user_id,
+        user_id=user.id,
     )
     db.session.add(timer)
     db.session.commit()
@@ -470,8 +476,8 @@ def add_timer_to_user():
     return success_response(timer.serialize(), 201)
 
 
-@app.route("/api/timer/<int:user_id>/")
-def get_timers(user_id):
+@app.route("/api/timer/")
+def get_timers():
     """
     Endpoint for getting timers from specific user
     """
@@ -484,7 +490,7 @@ def get_timers(user_id):
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
 
-    timers = Timer.query.filter_by(user_id=user_id).all()
+    timers = Timer.query.filter_by(user_id=user.id).all()
     if timers is None:
         return failure_response("User not found")
     return success_response([t.serialize() for t in timers])

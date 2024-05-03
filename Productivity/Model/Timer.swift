@@ -9,7 +9,7 @@ import Foundation
 
 struct TimerData: Codable, Hashable {
     let id: Int
-    let elapsed_time: Int
+    let elapsedTime: Int
     let hours: Int
     let minutes: Int
     let seconds: Int
