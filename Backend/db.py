@@ -22,7 +22,7 @@ class User(db.Model):
 
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False, unique = True)
+    name = db.Column(db.String, nullable=False, unique=True)
     password_digest = db.Column(db.String, nullable=False)
     timers = db.relationship("Timer", cascade="delete")
     courses = db.relationship(
@@ -39,8 +39,7 @@ class User(db.Model):
         """
         self.name = kwargs.get("name")
         self.password_digest = bcrypt.hashpw(
-            kwargs.get('password_digest').encode('utf8'), 
-            bcrypt.gensalt(rounds=13)
+            kwargs.get("password_digest").encode("utf8"), bcrypt.gensalt(rounds=13)
         )
         self.renew_session()
 
@@ -52,9 +51,9 @@ class User(db.Model):
 
     def session_serialize(self):
         return {
-            'session_token': self.session_token,
-            'session_expiration': str(self.session_expiration),
-            'update_token': self.update_token
+            "session_token": self.session_token,
+            "session_expiration": self.session_expiration.timestamp(),
+            "update_token": self.update_token,
         }
 
     def serialize(self):
@@ -67,6 +66,12 @@ class User(db.Model):
             "timers": [t.simple_serialize() for t in self.timers],
         }
 
+    def serialize_with_session(self):
+        """
+        Serialize User object with session data
+        """
+        return {"session": self.session_serialize(), "user": self.serialize()}
+
     def _urlsafe_base_64(self):
         return hashlib.sha1(os.urandom(64)).hexdigest()
 
@@ -76,10 +81,13 @@ class User(db.Model):
         self.session_expiration = datetime.datetime.now() + datetime.timedelta(days=1)
 
     def verify_password(self, password):
-        return bcrypt.checkpw(password.encode('utf8'), self.password_digest)
+        return bcrypt.checkpw(password.encode("utf8"), self.password_digest)
 
     def verify_session_token(self, session_token):
-        return session_token == self.session_token and datetime.datetime.now() < self.session_expiration
+        return (
+            session_token == self.session_token
+            and datetime.datetime.now() < self.session_expiration
+        )
 
     def verify_update_token(self, update_token):
         return update_token == self.update_token
@@ -112,7 +120,12 @@ class Course(db.Model):
         """
         Serialize Course without assignments or users
         """
-        return {"id": self.id, "name": self.name, "code": self.code, "description": self.description}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "code": self.code,
+            "description": self.description,
+        }
 
     def user_data_serialize(self):
         """

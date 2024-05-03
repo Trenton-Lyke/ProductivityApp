@@ -17,6 +17,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+
 def extract_token(request):
     auth_header = request.headers.get("Authorization")
     if auth_header is None:
@@ -25,6 +26,7 @@ def extract_token(request):
     if not bearer_token:
         return False, failure_response("Missing authorization header")
     return True, bearer_token
+
 
 def success_response(data, code=200):
     """
@@ -61,9 +63,9 @@ def create_course():
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token = session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user or not user.verify_session_token(session_token):
-        return failure_response('Invalid session token')
+        return failure_response("Invalid session token")
 
     body = json.loads(request.data)
     code = body.get("code", None)
@@ -116,7 +118,7 @@ def user_courses(user_id):
     if user is None:
         return failure_response("User not found")
     return success_response({"courses": user.serialize().get("courses")})
-    
+
 
 @app.route("/api/course/<course_id>/", methods=["POST"])
 def change_course(course_id):
@@ -126,18 +128,18 @@ def change_course(course_id):
     success, session_token = extract_token(request)
     if not success:
         return session_token
-    
-    user = User.query.filter_by(session_token = session_token).first()
+
+    user = User.query.filter_by(session_token=session_token).first()
     if user is None or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
-    
+
     body = json.loads(request.data)
     name = body.get("name")
     code = body.get("code")
     description = body.get("description", None)
-    
+
     course = Course.query.filter_by(id=course_id).first()
-    
+
     if course == None:
         return failure_response("Course not found")
     if name == None and code == None and description == None:
@@ -148,9 +150,10 @@ def change_course(course_id):
         course.code = code
     if description != None:
         course.description = description
-    
+
     db.session.commit()
     return success_response(course.serialize())
+
 
 @app.route("/api/course/<int:course_id>/", methods=["DELETE"])
 def delete_course(course_id):
@@ -160,10 +163,10 @@ def delete_course(course_id):
     success, session_token = extract_token(request)
     if not success:
         return session_token
-    user = User.query.filter_by(session_token = session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if user is None or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
-    
+
     course = Course.query.filter_by(id=course_id).first()
     if course is None:
         return failure_response("Course not found")
@@ -195,6 +198,7 @@ def create_user():
     db.session.commit()
     return success_response(new_user.serialize(), 201)
 
+
 @app.route("/api/users/<int:user_id>/")
 def get_user(user_id):
     """
@@ -204,6 +208,7 @@ def get_user(user_id):
     if user is None:
         return failure_response("User not found")
     return success_response(user.serialize())
+
 
 @app.route("/api/users/login/", methods=["POST"])
 def login():
@@ -216,10 +221,13 @@ def login():
     if name is None or password is None:
         error += "Missing name or password in request body. "
     user = User.query.filter_by(name=name).first()
+    if user is None:
+        return failure_response("Username and/or password is incorrect.")
     user_valid = user.verify_password(password)
     if user_valid == False:
         return failure_response("Username and/or password is incorrect.")
-    return success_response(user.session_serialize())
+    return success_response(user.serialize_with_session())
+
 
 @app.route("/logout/", methods=["POST"])
 def logout():
@@ -273,9 +281,9 @@ def add_assignment_to_course(course_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token = session_token).first
+    user = User.query.filter_by(session_token=session_token).first
     if not user or not user.verify_session_token(session_token):
-        return failure_response('Invalid session token')
+        return failure_response("Invalid session token")
 
     body = json.loads(request.data)
     name = body.get("name", None)
@@ -377,12 +385,11 @@ def get_timers(user_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token = session_token).first
+    user = User.query.filter_by(session_token=session_token).first
     if not user or not user.verify_session_token(session_token):
-        return failure_response('Invalid session token')
-        
+        return failure_response("Invalid session token")
+
     timers = Timer.query.filter_by(user_id=user_id).all()
-    print(timers)
     if timers is None:
         return failure_response("User not found")
     return success_response([t.serialize() for t in timers])
@@ -424,9 +431,9 @@ def get_leader_board_position(time_span, user_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token = session_token).first
+    user = User.query.filter_by(session_token=session_token).first
     if not user or not user.verify_session_token(session_token):
-        return failure_response('Invalid session token')
+        return failure_response("Invalid session token")
 
     if (
         time_span != "all"
