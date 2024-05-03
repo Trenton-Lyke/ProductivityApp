@@ -281,7 +281,7 @@ def add_assignment_to_course(course_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token=session_token).first
+    user = User.query.filter_by(session_token=session_token).first()
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
 
@@ -385,7 +385,7 @@ def get_timers(user_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token=session_token).first
+    user = User.query.filter_by(session_token=session_token).first()
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
 
@@ -431,7 +431,7 @@ def get_leader_board_position(time_span, user_id):
         return response
     session_token = response
 
-    user = User.query.filter_by(session_token=session_token).first
+    user = User.query.filter_by(session_token=session_token).first()
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
 
