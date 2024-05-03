@@ -88,6 +88,7 @@ def create_course():
         return failure_response(error, 400)
 
     new_course = Course(code=code, name=name, description=description)
+    new_course.users.append(user)
     db.session.add(new_course)
     db.session.commit()
     return success_response(new_course.serialize(), 201)
