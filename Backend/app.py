@@ -226,7 +226,20 @@ def login():
     user_valid = user.verify_password(password)
     if user_valid == False:
         return failure_response("Username and/or password is incorrect.")
-    return success_response(user.serialize_with_session())
+
+    leader_board = [l.user_id for l in get_leader_board("all")]
+
+    if user.id in leader_board:
+        return success_response(
+            {
+                **user.serialize_with_session(),
+                "position": leader_board.index(user.id) + 1,
+            }
+        )
+    else:
+        return success_response(
+            {**user.serialize_with_session(), "position": len(leader_board) + 1}
+        )
 
 
 @app.route("/logout/", methods=["POST"])
