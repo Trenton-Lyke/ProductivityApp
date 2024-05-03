@@ -14,7 +14,6 @@ struct EditAssignmentView: View {
     @State private var name: String
     @State private var description: String
     @State private var dueDate: Date
-    @State private var selectedCourseId: Int
     @State private var showSuccess = false
     @State private var showFailure = false
     
@@ -23,7 +22,6 @@ struct EditAssignmentView: View {
         name = assignment.name
         description = assignment.description
         dueDate = assignment.dueDate
-        selectedCourseId = assignment.courseId
     }
     
     var body: some View {
@@ -36,17 +34,6 @@ struct EditAssignmentView: View {
                 Spacer()
                 VStack(alignment: .leading){
                     BorderedTextEditor(title: "Description", text: $description)
-                }
-                
-                Spacer()
-                VStack{
-                    Text("Select a course").font(.headline)
-                    Picker("Select a course", selection: $selectedCourseId) {
-                        ForEach(UserDataManager.shared.getCourses(), id: \.id) { course in
-                            Text(course.name)
-                            
-                        }
-                    }
                 }
                 
                 VStack(alignment: .leading){
@@ -67,7 +54,7 @@ struct EditAssignmentView: View {
     }
     
     private func editAssignment() {
-        UserDataManager.shared.updateAssignment(assignmentId: assignmentBinding.id, name: name, description: description, courseId: selectedCourseId, dueDate: dueDate, done: assignmentBinding.done) { assignment in
+        UserDataManager.shared.updateAssignment(assignmentId: assignmentBinding.id, name: name, description: description, dueDate: dueDate, done: assignmentBinding.done) { assignment in
             assignmentBinding = assignment
             showSuccess.toggle()
         } onfailure: {

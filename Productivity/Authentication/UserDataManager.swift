@@ -139,79 +139,48 @@ class UserDataManager : ObservableObject {
         }
     }
     
-//    func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
-//        if !isLoggedIn() {
-//            onfailure()
-//            return
-//        }
-//        guard let currentSession = session else {
-//            onfailure()
-//            return
-//        }
-//        NetworkManager.shared.updateAssignment(sessionToken: currentSession.sessionToken, courseId: courseId, assignmentId: assignmentId, name: name, description: description, dueDate: dueDate, done: done) { [weak self] assignment in
-//            guard let self = self else {
-//                onfailure()
-//                return
-//            }
-//            if let assignment = assignment {
-//                updateUserData(callback: {onsuccess(assignment)})
-//            } else {
-//                onfailure()
-//            }
-//        }
-//    }
-    
-    func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
-        if let currentUser = user {
-            let newAssignment = Assignment(id: assignmentId, name: name, description: description, dueDate: dueDate, done: done, courseId: courseId)
-            var courses: [Course] = []
-            for course in currentUser.courses {
-                var assignments: [Assignment] = []
-                for assignment in course.assignments {
-                    if assignment.id != assignmentId {
-                        assignments.append(assignment)
-                    } else if courseId == course.id {
-                        assignments.append(newAssignment)
-                    }
-                }
-                let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: assignments)
-                courses.append(newCourse)
-            }
-            for i in 0..<courses.count {
-                let course = courses[i]
-                if courseId == course.id && !course.assignments.contains(newAssignment){
-                    courses[i] = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: course.assignments + [newAssignment])
-                }
-                
-            }
-            user = User(id: currentUser.id, name: currentUser.name, courses: courses)
-            onsuccess(newAssignment)
-        } else {
+    func updateAssignment(assignmentId: Int, name: String, description: String, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
+        if !isLoggedIn() {
             onfailure()
+            return
+        }
+        guard let currentSession = session else {
+            onfailure()
+            return
+        }
+        NetworkManager.shared.updateAssignment(sessionToken: currentSession.sessionToken, assignmentId: assignmentId, name: name, description: description, dueDate: dueDate, done: done) { [weak self] assignment in
+            guard let self = self else {
+                onfailure()
+                return
+            }
+            if let assignment = assignment {
+                updateUserData(callback: {onsuccess(assignment)})
+            } else {
+                onfailure()
+            }
         }
     }
     
     func deleteAssignment(assignmentId: Int, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
-        if let currentUser = user {
-            var removedAssignment = Assignment.dummyAssignment
-            var courses: [Course] = []
-            for course in currentUser.courses {
-                var assignments: [Assignment] = []
-                for assignment in course.assignments {
-                    if assignment.id != assignmentId {
-                        assignments.append(assignment)
-                    } else {
-                        removedAssignment = assignment
-                    }
-                }
-                let newCourse = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: assignments)
-                courses.append(newCourse)
-            }
-            user = User(id: currentUser.id, name: currentUser.name, courses: courses)
-            onsuccess(removedAssignment)
+        if !isLoggedIn() {
+            onfailure()
+            return
         }
-        
-        onfailure()
+        guard let currentSession = session else {
+            onfailure()
+            return
+        }
+        NetworkManager.shared.deleteAssignment(sessionToken: currentSession.sessionToken, assignmentId: assignmentId) { [weak self] assignment in
+            guard let self = self else {
+                onfailure()
+                return
+            }
+            if let assignment = assignment {
+                updateUserData(callback: {onsuccess(assignment)})
+            } else {
+                onfailure()
+            }
+        }
     }
     
     func createCourse(name: String, code: String, description: String, onsuccess: @escaping (Course) -> Void, onfailure: @escaping () -> Void) {

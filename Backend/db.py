@@ -187,7 +187,7 @@ class Assignment(db.Model):
         """
         Serialize Assignment
         """
-        return {**self.simple_serialize(), "course": self.course.simple_serialize()}
+        return {**self.simple_serialize()}
 
 
 class Timer(db.Model):

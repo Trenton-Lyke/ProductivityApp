@@ -71,7 +71,7 @@ struct AssignmentRow: View {
                     .imageScale(.large)
                     .foregroundStyle(.pink)
                     .onTapGesture {
-                        UserDataManager.shared.updateAssignment(assignmentId: assignment.id, name: assignment.name, description: assignment.description, courseId: assignment.courseId, dueDate: assignment.dueDate, done: !assignment.done) { assignment in
+                        UserDataManager.shared.updateAssignment(assignmentId: assignment.id, name: assignment.name, description: assignment.description,  dueDate: assignment.dueDate, done: !assignment.done) { assignment in
 
                         } onfailure: {
                             

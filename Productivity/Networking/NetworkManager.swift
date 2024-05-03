@@ -221,35 +221,59 @@ class NetworkManager {
         }
     }
     
-//    func updateAssignment(sessionToken: String, courseId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
-//        let headers: HTTPHeaders = [
-//            "Authorization": "Bearer \(sessionToken)"
-//        ]
-//        let params: Parameters = [
-//            "name": name,
-//            "description": description,
-//            "due_date": dueDate.timeIntervalSince1970,
-//            "done": done
-//        ]
-//        AF.request("\(devEndpoint)/api/courses/\(courseId)/assignment/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
-//            switch resp.result{
-//                case .success(let data):
-//                    do{
-//                        let decoder = JSONDecoder()
-//                        decoder.dateDecodingStrategy = .secondsSince1970
-//                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-//                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
-//                        handler(jsonData)
-//                    } catch {
-//                        handler(nil)
-//                        print(error.localizedDescription)
-//                    }
-//                case .failure(let error):
-//                    handler(nil)
-//                    print(error.localizedDescription)
-//            }
-//        }
-//    }
+    func updateAssignment(sessionToken: String, assignmentId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        let params: Parameters = [
+            "name": name,
+            "description": description,
+            "due_date": dueDate.timeIntervalSince1970,
+            "done": done
+        ]
+        AF.request("\(devEndpoint)/api/assignment/\(assignmentId)/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func deleteAssignment(sessionToken: String, assignmentId: Int, handler: @escaping (_ course: Assignment?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        AF.request("\(devEndpoint)/api/assignment/\(assignmentId)/", method: .delete, parameters: nil, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
 
     func createTimer(sessionToken: String, elapsedTime: Int, hours: Int, minutes: Int, seconds: Int, date: Date, handler: @escaping (_ course: TimerData?) -> (Void)) {
         let headers: HTTPHeaders = [
