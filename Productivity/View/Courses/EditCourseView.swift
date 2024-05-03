@@ -45,7 +45,7 @@ struct EditCourseView: View {
     
     private func editCourse() {
         print("create course button clicked: \(name); \(description)")
-        UserDataManager.shared.updateCourse(courseId: courseId, name: name, code: code, description: description, assignments: currentCourse.assignments) { course in
+        UserDataManager.shared.updateCourse(courseId: courseId, name: name, code: code, description: description) { course in
 
             showSuccess.toggle()
         } onfailure: {

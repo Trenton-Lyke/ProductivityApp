@@ -75,7 +75,7 @@ class NetworkManager {
         AF.request("\(devEndpoint)/api/users/login/", method: .post, parameters: nil, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
             switch resp.result{
                 case .success( _):
-                        handler(true)
+                    handler(true)
                     
                 case .failure(let error):
                     handler(false)
@@ -85,24 +85,172 @@ class NetworkManager {
     }
 
     
-    func getUser(userId: Int, handler: @escaping (_ apiData: [User]) -> (Void)) {
-        AF.request("\(devEndpoint)/api/users/\(userId)/", method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil, interceptor: nil).response{ resp in
+    func updateUser(sessionToken: String, handler: @escaping (_ apiData: UserSessionData?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        AF.request("\(devEndpoint)/api/users/", method: .get, parameters: nil, encoding: URLEncoding.default, headers: headers, interceptor: nil).response{ resp in
             switch resp.result{
                 case .success(let data):
                     do{
                         let decoder = JSONDecoder()
                         decoder.dateDecodingStrategy = .secondsSince1970
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        let jsonData: [User] = try decoder.decode([User].self, from: data!)
+                        let jsonData: UserSessionData = try decoder.decode(UserSessionData.self, from: data!)
                         handler(jsonData)
                     } catch {
+                        handler(nil)
                         print(error.localizedDescription)
                     }
                 case .failure(let error):
+                    handler(nil)
                     print(error.localizedDescription)
             }
         }
     }
+    
+    func deleteCourse(sessionToken: String, courseId: Int, handler: @escaping (_ course: Course?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        AF.request("\(devEndpoint)/api/course/\(courseId)/", method: .delete, parameters: nil, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Course = try decoder.decode(Course.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func updateCourse(sessionToken: String, courseId: Int, name: String, code: String, description: String, handler: @escaping (_ course: Course?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        let params: Parameters = [
+            "name": name,
+            "code": code,
+            "description": description
+        ]
+        AF.request("\(devEndpoint)/api/course/\(courseId)/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Course = try decoder.decode(Course.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func createCourse(sessionToken: String, name: String, code: String, description: String, handler: @escaping (_ course: Course?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        let params: Parameters = [
+            "name": name,
+            "code": code,
+            "description": description
+        ]
+        AF.request("\(devEndpoint)/api/course/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Course = try decoder.decode(Course.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func createAssignment(sessionToken: String, courseId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        let params: Parameters = [
+            "name": name,
+            "description": description,
+            "due_date": dueDate.timeIntervalSince1970,
+            "done": done
+        ]
+        AF.request("\(devEndpoint)/api/courses/\(courseId)/assignment/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func updateAssignment(sessionToken: String, courseId: Int, name: String, description: String, dueDate: Date, done: Bool, handler: @escaping (_ course: Assignment?) -> (Void)) {
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(sessionToken)"
+        ]
+        let params: Parameters = [
+            "name": name,
+            "description": description,
+            "due_date": dueDate.timeIntervalSince1970,
+            "done": done
+        ]
+        AF.request("\(devEndpoint)/api/courses/\(courseId)/assignment/", method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers, interceptor: nil).response{ resp in
+            switch resp.result{
+                case .success(let data):
+                    do{
+                        let decoder = JSONDecoder()
+                        decoder.dateDecodingStrategy = .secondsSince1970
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        let jsonData: Assignment = try decoder.decode(Assignment.self, from: data!)
+                        handler(jsonData)
+                    } catch {
+                        handler(nil)
+                        print(error.localizedDescription)
+                    }
+                case .failure(let error):
+                    handler(nil)
+                    print(error.localizedDescription)
+            }
+        }
+    }
+
     
 //    func getUserSubtasks(userId: Int, parentTaskId: Int, handler: @escaping (_ apiData: [Assignment]) -> (Void)) {
 //        AF.request("\(devEndpoint)/api/tasks/\(userId)/subtasks/\(parentTaskId)/", method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil, interceptor: nil).response{ resp in

@@ -203,12 +203,33 @@ def create_user():
 @app.route("/api/users/<int:user_id>/")
 def get_user(user_id):
     """
-    Endpoint for getting specific user
+    Endpoint for getting specific user by id
     """
     user = User.query.filter_by(id=user_id).first()
     if user is None:
         return failure_response("User not found")
     return success_response(user.serialize())
+
+
+@app.route("/api/users/")
+def get_update_user():
+    """
+    Endpoint for getting updated user by session
+    """
+    success, response = extract_token(request)
+    if not success:
+        return response
+    session_token = response
+
+    user = User.query.filter_by(session_token=session_token).first()
+
+    if not user or not user.verify_session_token(session_token):
+        return failure_response("Invalid Session Token")
+
+    if user is None:
+        return failure_response("User not found")
+    position = get_leader_board_position(user)
+    return success_response({**user.serialize_with_session(), **position})
 
 
 @app.route("/api/users/login/", methods=["POST"])
@@ -225,22 +246,25 @@ def login():
     if user is None:
         return failure_response("Username and/or password is incorrect.")
     user_valid = user.verify_password(password)
+
     if user_valid == False:
         return failure_response("Username and/or password is incorrect.")
 
+    user.renew_session()
+    db.session.commit()
+    position = get_leader_board_position(user)
+
+    return success_response({**user.serialize_with_session(), **position})
+
+
+def get_leader_board_position(user):
     leader_board = [l.user_id for l in get_leader_board("all")]
 
     if user.id in leader_board:
-        return success_response(
-            {
-                **user.serialize_with_session(),
-                "position": leader_board.index(user.id) + 1,
-            }
-        )
+        return {"position": leader_board.index(user.id) + 1}
+
     else:
-        return success_response(
-            {**user.serialize_with_session(), "position": len(leader_board) + 1}
-        )
+        return {"position": len(leader_board) + 1}
 
 
 @app.route("/logout/", methods=["POST"])
@@ -252,7 +276,7 @@ def logout():
 
     user = User.query.filter_by(session_token=session_token).first()
 
-    if not user or not User.verify_session_token(session_token):
+    if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid Session Token")
     user.session_expiration = datetime.dateTime.now()
     db.session.commit()
@@ -410,7 +434,7 @@ def get_timers(user_id):
 
 
 @app.route("/api/timer/leader_board/<time_span>/")
-def get_leader_board(time_span):
+def retrieve_leader_board(time_span):
     """
     Endpoint for work time leader board
     """
@@ -436,7 +460,7 @@ def get_leader_board(time_span):
 
 
 @app.route("/api/timer/leader_board/<time_span>/<int:user_id>/")
-def get_leader_board_position(time_span, user_id):
+def retrieve_leader_board_position(time_span, user_id):
     """
     Endpoint for user's position in work time leader board
     """
@@ -465,15 +489,7 @@ def get_leader_board_position(time_span, user_id):
     if user is None:
         return failure_response("User not found")
 
-    leader_board = [l.user_id for l in get_leader_board(time_span)]
-
-    if leader_board is None:
-        return failure_response("No timers found")
-
-    if user_id in leader_board:
-        return success_response({"position": leader_board.index(user_id) + 1})
-    else:
-        return success_response({"position": len(leader_board) + 1})
+    return success_response(get_leader_board_position())
 
 
 def get_leader_board(time_span):

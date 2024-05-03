@@ -31,6 +31,8 @@ struct AssignmentView: View {
 
                         }
                     }.padding(20)
+                    Text("Due: \(assignment.dueDate)")
+                        .font(.caption)
                     Text(assignment.description)
                     Spacer()
                 }

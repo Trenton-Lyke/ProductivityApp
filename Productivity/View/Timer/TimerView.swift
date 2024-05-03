@@ -14,25 +14,6 @@ enum TimerStatus {
     case alarming
 }
 
-enum TimerType {
-    case workTimer
-    case breakTimer
-    
-    var name : String {
-        switch self {
-            case .workTimer: return "Work"
-            case .breakTimer: return "Break"
-        }
-    }
-    
-    var isWork : Bool {
-        switch self {
-            case .workTimer: return true
-            case .breakTimer: return false
-        }
-    }
-}
-
 func formatTimePart(timePart: Int) -> String {
     if timePart < 10 {
         return "0\(timePart)"
@@ -64,7 +45,7 @@ struct TimerView: View {
 
     
     var body: some View {
-        NavigationView(title: "Timer") {
+        NavigationView(title: "Work Timer") {
             VStack(spacing: 20){
                 HStack{
                     Picker("Hours", selection: $timerHour) {
