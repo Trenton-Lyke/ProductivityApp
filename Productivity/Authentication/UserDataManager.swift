@@ -13,7 +13,8 @@ class UserDataManager : ObservableObject {
     static let shared = UserDataManager()
     
     @Published private var user: User?
-    @Published private var changeForcer: Bool = true
+    @Published private var session: SessionData?
+    @Published private var position: Int?
 
 
     private init() { 
@@ -38,45 +39,61 @@ class UserDataManager : ObservableObject {
         return (assignmentsCount, completedAssignmentsCount)
     }
 
-    
-    func login(username: String, password: String, onsuccess: (User) -> Void, onfailure: () -> Void) {
-        if username == "A" {
-            user = User.dummyUser
-            
-            if let currentUser = user {
-                onsuccess(currentUser)
-            }
+    func getPosition() -> String {
+        if let position = position {
+            return "\(position)"
         } else {
-            onfailure()
+            return "Unknown"
         }
     }
     
-    func logout() {
-        user = nil
-    }
-    
-    
-    func createAccount(username: String, password: String, onsuccess: (User) -> Void, onfailure: () -> Void) {
-        if username == "A" {
-            user = User(id: 1, name: username, courses: Course.dummyCourses)
-            
-            if let currentUser = user {
-                onsuccess(currentUser)
+    func login(username: String, password: String, onsuccess: @escaping (UserSessionData) -> Void, onfailure: @escaping () -> Void) {
+        NetworkManager.shared.login(name: username, password: password) { [weak self] userSession in
+            if let userSession = userSession, let self = self{
+                self.user = userSession.user
+                self.session = userSession.session
+                self.position = userSession.position
+                onsuccess(userSession)
+            } else {
+                onfailure()
             }
-        } else {
-            onfailure()
         }
     }
+    
+    func logout(onsuccess: @escaping () -> Void, onfailure: @escaping () -> Void) {
+        NetworkManager.shared.logout(sessionToken: session?.sessionToken ?? "") { [weak self] success in
+            guard let self = self else {
+                onfailure()
+                return
+            }
+            self.user = nil
+            self.session = nil
+            self.position = nil
+            onsuccess()
+        }
+    }
+    
+    
+    func createAccount(username: String, password: String, onsuccess: @escaping (UserSessionData) -> Void, onfailure: @escaping () -> Void) {
+        NetworkManager.shared.createUser(name: username, password: password) { [weak self] user in
+            if let _ = user, let self = self{
+                login(username: username, password: password, onsuccess: onsuccess, onfailure: onfailure)
+            } else {
+                onfailure()
+            }
+        }
+    }
+    
     
     func isLoggedIn() -> Bool {
-        if let _ = user {
-            return true
+        if let _ = user, let session = session {
+            return session.sessionExpiration > Date()
         }
         
         return false
     }
     
-    func addAssignment(name: String, description: String, courseId: Int, dueDate: Date, onsuccess: (Assignment) -> Void, onfailure: () -> Void) {
+    func addAssignment(name: String, description: String, courseId: Int, dueDate: Date, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             var maxId = 0
             for course in currentUser.courses {
@@ -95,14 +112,13 @@ class UserDataManager : ObservableObject {
                 }
             }
             user = User(id: currentUser.id, name: currentUser.name, courses: courses)
-            changeForcer.toggle()
             onsuccess(newAssignment)
         } else {
             onfailure()
         }
     }
     
-    func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: (Assignment) -> Void, onfailure: () -> Void) {
+    func updateAssignment(assignmentId: Int, name: String, description: String, courseId: Int, dueDate: Date, done: Bool, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             let newAssignment = Assignment(id: assignmentId, name: name, description: description, dueDate: dueDate, done: done, courseId: courseId)
             var courses: [Course] = []
@@ -119,21 +135,20 @@ class UserDataManager : ObservableObject {
                 courses.append(newCourse)
             }
             for i in 0..<courses.count {
-                var course = courses[i]
+                let course = courses[i]
                 if courseId == course.id && !course.assignments.contains(newAssignment){
                     courses[i] = Course(id: course.id, name: course.name, code: course.code, description: course.description, assignments: course.assignments + [newAssignment])
                 }
                 
             }
             user = User(id: currentUser.id, name: currentUser.name, courses: courses)
-            changeForcer.toggle()
             onsuccess(newAssignment)
         } else {
             onfailure()
         }
     }
     
-    func deleteAssignment(assignmentId: Int, onsuccess: (Assignment) -> Void, onfailure: () -> Void) {
+    func deleteAssignment(assignmentId: Int, onsuccess: @escaping (Assignment) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             var removedAssignment = Assignment.dummyAssignment
             var courses: [Course] = []
@@ -156,7 +171,7 @@ class UserDataManager : ObservableObject {
         onfailure()
     }
     
-    func createCourse(name: String, code: String, description: String, onsuccess: (Course) -> Void, onfailure: () -> Void) {
+    func createCourse(name: String, code: String, description: String, onsuccess: @escaping (Course) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             var maxId = 0
             for course in currentUser.courses {
@@ -172,7 +187,7 @@ class UserDataManager : ObservableObject {
         }
     }
     
-    func updateCourse(courseId: Int, name: String, code: String, description: String, assignments: [Assignment], onsuccess: (Course) -> Void, onfailure: () -> Void) {
+    func updateCourse(courseId: Int, name: String, code: String, description: String, assignments: [Assignment], onsuccess: @escaping (Course) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             let newCourse = Course(id: courseId, name: name, code: code, description: description, assignments: assignments)
             var courses: [Course] = []
@@ -191,7 +206,7 @@ class UserDataManager : ObservableObject {
         }
     }
     
-    func deleteCourse(courseId: Int, onsuccess: (Course) -> Void, onfailure: () -> Void) {
+    func deleteCourse(courseId: Int, onsuccess: @escaping (Course) -> Void, onfailure: @escaping () -> Void) {
         if let currentUser = user {
             var removedCourse = Course.dummyCourse1
             var courses: [Course] = []

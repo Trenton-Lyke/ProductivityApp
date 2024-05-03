@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D84977ED2BE44EFE008201FF /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84977EC2BE44EFE008201FF /* SessionData.swift */; };
+		D84977EF2BE45523008201FF /* UserSessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84977EE2BE45523008201FF /* UserSessionData.swift */; };
 		D85D813C2BE2880700428677 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85D813B2BE2880700428677 /* SoundPlayer.swift */; };
 		D85D813D2BE2907D00428677 /* alarm_clock.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D85D81382BE2878900428677 /* alarm_clock.mp3 */; };
 		D85D81402BE2984800428677 /* BorderedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85D813F2BE2984800428677 /* BorderedNumberField.swift */; };
@@ -66,6 +68,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D84977EC2BE44EFE008201FF /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
+		D84977EE2BE45523008201FF /* UserSessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSessionData.swift; sourceTree = "<group>"; };
 		D85D81382BE2878900428677 /* alarm_clock.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = alarm_clock.mp3; sourceTree = "<group>"; };
 		D85D813B2BE2880700428677 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
 		D85D813F2BE2984800428677 /* BorderedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedNumberField.swift; sourceTree = "<group>"; };
@@ -272,6 +276,8 @@
 				D8CD9EFA2BE01E600003053A /* Course.swift */,
 				D8CD9EFC2BE01F860003053A /* User.swift */,
 				D8A677EE2BE40D0800C6AE82 /* Timer.swift */,
+				D84977EC2BE44EFE008201FF /* SessionData.swift */,
+				D84977EE2BE45523008201FF /* UserSessionData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -461,6 +467,7 @@
 				D8F7C3402BE065EC00F2C6B7 /* EditAssignmentView.swift in Sources */,
 				D8CD9F022BE0218E0003053A /* Assignment+Extension.swift in Sources */,
 				D8F7C33A2BE0413C00F2C6B7 /* CreateCourseView.swift in Sources */,
+				D84977ED2BE44EFE008201FF /* SessionData.swift in Sources */,
 				D893FFE22BDFEE4C0042851B /* TimerView.swift in Sources */,
 				D893FFE62BDFEE6C0042851B /* AssignmentsView.swift in Sources */,
 				D8CD9EFB2BE01E600003053A /* Course.swift in Sources */,
@@ -478,6 +485,7 @@
 				D8F9865F2BDD60D600A5A956 /* View+Extension.swift in Sources */,
 				D8F7C33E2BE0548500F2C6B7 /* CreateAssignmentView.swift in Sources */,
 				D8CD9F0C2BE032800003053A /* BorderedSecureField.swift in Sources */,
+				D84977EF2BE45523008201FF /* UserSessionData.swift in Sources */,
 				D8CD9EFD2BE01F860003053A /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

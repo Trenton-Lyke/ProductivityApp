@@ -41,6 +41,7 @@ struct AccountView: View {
 
 struct AuthenticatedView: View {
     @Binding var authMethod: AccountPage
+    @State private var showFailure = false
     private let assignmentCount: Int
     private let completedAssignmentCount: Int
 
@@ -49,6 +50,7 @@ struct AuthenticatedView: View {
         let assignmentCounts = UserDataManager.shared.getAssignmentCounts()
         assignmentCount = assignmentCounts.0
         completedAssignmentCount = assignmentCounts.1
+
     }
     
     var body: some View {
@@ -59,18 +61,24 @@ struct AuthenticatedView: View {
                     .font(.largeTitle)
                 VStack(alignment: .leading, spacing: 20){
                     Text("\(completedAssignmentCount) out of \(assignmentCount) assignments completed").font(.title3)
-                    Text("Ranked 1 for time spent working among users").font(.title3)
+                    Text("Ranked \(UserDataManager.shared.getPosition()) for time spent working among users").font(.title3)
                 }
                 
                 Button {
-                    UserDataManager.shared.logout()
-                    authMethod = .login
+                    UserDataManager.shared.logout(onsuccess: {
+                        authMethod = .login
+                    }, onfailure: {
+                        showFailure.toggle()
+                    })
+                    
                 } label: {
                     Text("Log out")
                 }
                 Spacer()
             }
             Spacer()
+        }.toast(isPresenting: $showFailure){
+            AlertToast(type: .error(.red), title: "Unable to logout")
         }
     }
     
@@ -102,8 +110,7 @@ struct LoginView: View {
     }
     
     private func login() {
-        print("login button clicked: \(username); \(password)")
-        UserDataManager.shared.login(username: username, password: password) { user in
+        UserDataManager.shared.login(username: username, password: password) { _ in
             
             if isTemporaryAuth {
                 self.presentationMode.wrappedValue.dismiss()
@@ -142,8 +149,8 @@ struct CreateAccountView: View {
     }
     
     private func createAccount() {
-        print("login button clicked: \(username); \(password)")
-        UserDataManager.shared.createAccount(username: username, password: password) { user in
+
+        UserDataManager.shared.createAccount(username: username, password: password) { _ in
             
             if isTemporaryAuth {
                 self.presentationMode.wrappedValue.dismiss()

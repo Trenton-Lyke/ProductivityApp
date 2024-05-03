@@ -50,7 +50,7 @@ struct CourseRow: View {
             CourseView(courseId: course.id)
         } label: {
             HStack{
-                Text(course.name)
+                Text("\(course.name) (\(course.code))")
                 Spacer()
                 Image(systemName: "trash")
                     .imageScale(.large)
