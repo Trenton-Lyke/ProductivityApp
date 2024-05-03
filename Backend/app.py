@@ -311,6 +311,63 @@ def logout():
 #     db.session.commit()
 #     return success_response(course.serialize())
 
+@app.route("/api/assignment/<int:assignment_id>/", methods=["DELETE"])
+def delete_assignment(assignment_id):
+    """
+    Endpoint for deleting course
+    """
+    success, session_token = extract_token(request)
+    if not success:
+        return session_token
+    user = User.query.filter_by(session_token=session_token).first()
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    
+    assignment = Assignment.query.filter_by(id=assignment_id).first()
+    if assignment is None:
+        return failure_response("assignment not found")
+    db.session.delete(assignment)
+    db.session.commit()
+    return success_response(assignment.serialize())
+
+
+@app.route("/api/assignment/<assignment_id>/", methods=["POST"])
+def change_assignment(assignment_id):
+    """
+    Endpoint for changing a course name and/or code
+    """
+    success, session_token = extract_token(request)
+    if not success:
+        return session_token
+
+    user = User.query.filter_by(session_token=session_token).first()
+    if user is None or not user.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+
+    body = json.loads(request.data)
+    name = body.get("name")
+    due_date = body.get("due_date")
+    description = body.get("description")
+    done = body.get("done")
+
+    assignment = Assignment.query.filter_by(id=assignment_id).first()
+
+    if assignment == None:
+        return failure_response("Course not found")
+    if name == None and due_date == None and description == None and done == None:
+        return failure_response("Bad request")
+    if name != None:
+        assignment.name = name
+    if due_date != None:
+        assignment.due_date = due_date
+    if description != None:
+        assignment.description = description
+    if done != None:
+        assignment.done = done
+
+    db.session.commit()
+    return success_response(assignment.serialize())
+
 
 @app.route("/api/courses/<int:course_id>/assignment/", methods=["POST"])
 def add_assignment_to_course(course_id):
