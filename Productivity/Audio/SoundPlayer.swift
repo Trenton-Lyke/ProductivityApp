@@ -22,7 +22,6 @@ class SoundPlayer {
             forResource: forResource,
             ofType: withExtension
         ) else {
-            print("did not load")
             return
         }
         
@@ -47,7 +46,7 @@ class SoundPlayer {
             player.play()
         }
         catch {
-            print("failed to play sound")
+
         }
     }
     

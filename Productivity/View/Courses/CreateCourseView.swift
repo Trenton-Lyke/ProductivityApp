@@ -36,8 +36,6 @@ struct CreateCourseView: View {
     }
     
     private func createCourse() {        
-        
-        print("create course button clicked: \(name); \(description)")
         UserDataManager.shared.createCourse(name: name, code: code, description: description) { course in
             name = ""
             code = ""

@@ -283,34 +283,6 @@ def logout():
     return success_response("Logged Out")
 
 
-# @app.route("/api/courses/<int:course_id>/add/", methods=["POST"])
-# def add_user_to_course(course_id):
-#     body = json.loads(request.data)
-#     user_id = body.get("user_id", None)
-
-#     error = ""
-
-#     if user_id is None:
-#         error += "Missing user_id in request body. "
-
-#     error = error.strip()
-
-#     if error != "":
-#         return failure_response(error, 400)
-
-#     user = User.query.filter_by(id=user_id).first()
-#     if user is None:
-#         return failure_response("User not found")
-
-#     course = Course.query.filter_by(id=course_id).first()
-#     if course is None:
-#         return failure_response("Course not found")
-
-#     course.users.append(user)
-
-#     db.session.commit()
-#     return success_response(course.serialize())
-
 @app.route("/api/assignment/<int:assignment_id>/", methods=["DELETE"])
 def delete_assignment(assignment_id):
     """
@@ -322,7 +294,7 @@ def delete_assignment(assignment_id):
     user = User.query.filter_by(session_token=session_token).first()
     if user is None or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
-    
+
     assignment = Assignment.query.filter_by(id=assignment_id).first()
     if assignment is None:
         return failure_response("assignment not found")

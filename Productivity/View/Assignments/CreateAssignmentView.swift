@@ -61,7 +61,6 @@ struct CreateAssignmentView: View {
     }
     
     private func addAssignment() {
-        print(selectedCourseId)
         UserDataManager.shared.addAssignment(name: name, description: description, courseId: selectedCourseId, dueDate: dueDate) { assignment in
             name = ""
             description = ""

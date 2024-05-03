@@ -134,9 +134,7 @@ struct TimerView: View {
         }.onReceive(timer) { firedDate in
             if currentHour == 0 && currentMinute == 0 && currentSecond == 0 {
                 userManager.addTimer(elapsedTime: timerDurationInSeconds, hours: timerHour, minutes: timerMinute, seconds: timerSecond) { _ in
-                    print("success")
                 } onfailure: {
-                    print("failure")
                 }
                 timerStatus = .alarming
                 timer.upstream.connect().cancel()

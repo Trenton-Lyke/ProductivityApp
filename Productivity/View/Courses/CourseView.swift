@@ -16,7 +16,7 @@ struct CourseView: View {
             Spacer()
             VStack{
                 HStack{
-                    Text("\(userManager.getCourse(id: courseId).name) \(userManager.getCourse(id: courseId).code)")
+                    Text("\(userManager.getCourse(id: courseId).name) (\(userManager.getCourse(id: courseId).code))")
                         .font(.largeTitle)
                     NavigationLink {
                         EditCourseView(courseId: courseId)
