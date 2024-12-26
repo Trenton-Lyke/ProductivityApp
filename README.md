@@ -1,4 +1,4 @@
-App Name: Productivity
+App Name: CourseFlow
 
 App Tagline: A productivity app for students that incentivizes work
 
